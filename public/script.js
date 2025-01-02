@@ -26,9 +26,10 @@ async function loadArts() {
 
 function openModal(imageUrl, text) {
     document.getElementById('modalImage').src = imageUrl;
-    document.getElementById('modalText').textContent = text;
+    document.getElementById('modalText').innerHTML = text;
     document.getElementById('modal').style.display = 'block';
 }
+
 
 function closeModal() {
     document.getElementById('modal').style.display = 'none';
