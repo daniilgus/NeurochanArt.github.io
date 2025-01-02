@@ -17,8 +17,10 @@ async function getImages() {
             const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
             const fileData = await fileResponse.json();
             const filePath = fileData.result.file_path;
+            const text = update.channel_post.text || update.channel_post.caption || "";
+            const author = update.channel_post.from.username || "Неизвестный автор"; 
 
-            images.push(`https://api.telegram.org/file/bot${TOKEN}/${filePath}`); 
+            images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: author }); 
         }
     }
 
