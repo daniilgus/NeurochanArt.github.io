@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
 });
 
+// Функция для получения изображений
 async function getImages() {
     try {
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
@@ -63,6 +64,7 @@ async function getImages() {
     }
 }
 
+// Эндпоинт для получения изображений
 app.get('/getImages', async (req, res) => {
     try {
         const images = await getImages();
@@ -73,6 +75,7 @@ app.get('/getImages', async (req, res) => {
     }
 });
 
+// Запуск сервера
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
