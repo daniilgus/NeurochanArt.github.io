@@ -19,11 +19,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
 });
 
-let offset = 0; // Начальное значение offset
-
 async function getImages() {
     try {
-        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${offset}`);
+        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`);
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -61,11 +59,6 @@ async function getImages() {
                 const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
                 images.push({ url: imageUrl, text: text, author: authorText });
             }
-        }
-
-        // Обновляем offset для следующих запросов
-        if (data.result.length > 0) {
-            offset = data.result[data.result.length - 1].update_id + 1;
         }
 
         console.log('Extracted images:', images); 
