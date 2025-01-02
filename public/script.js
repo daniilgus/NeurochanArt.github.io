@@ -33,9 +33,6 @@ async function loadArts() {
     }
 }
 
-// Функция для автоматического обновления изображений каждые 10 секунд
-setInterval(loadArts, 10000);
-
 function openModal(imageUrl, text) {
     document.getElementById('modalImage').src = imageUrl;
     document.getElementById('modalText').innerHTML = text;
