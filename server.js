@@ -19,10 +19,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
 });
 
-// Функция для получения изображений
+let offset = 0; // Начальное значение offset
+
 async function getImages() {
     try {
-        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
+        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${offset}`);
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`);
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -48,12 +49,23 @@ async function getImages() {
                 const filePath = fileData.result.file_path;
                 const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
 
-                const text = update.channel_post.text || update.channel_post.caption || "";
+                // Проверка доступности файла
+                const imageCheckResponse = await fetch(imageUrl);
+                if (!imageCheckResponse.ok) {
+                    console.error(`Image not accessible at: ${imageUrl}`);
+                    continue; // Пропускаем недоступные изображения
+                }
 
+                const text = update.channel_post.text || update.channel_post.caption || "";
                 const authorMatch = text.match(/Автор:(.*)/);
                 const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
                 images.push({ url: imageUrl, text: text, author: authorText });
             }
+        }
+
+        // Обновляем offset для следующих запросов
+        if (data.result.length > 0) {
+            offset = data.result[data.result.length - 1].update_id + 1;
         }
 
         console.log('Extracted images:', images); 
