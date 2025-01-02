@@ -50,7 +50,14 @@ async function getImages() {
             }
         }
 
-        return images; // Возвращаем только актуальные изображения
+        // Удаляем дубликаты изображений
+        const uniqueImages = images.filter((image, index, self) =>
+            index === self.findIndex((t) => (
+                t.url === image.url
+            ))
+        );
+
+        return uniqueImages; // Возвращаем только актуальные изображения
     } catch (error) {
         console.error('Error fetching images:', error.message);
         throw error; // Пробрасываем ошибку дальше
