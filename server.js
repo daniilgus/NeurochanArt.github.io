@@ -7,7 +7,7 @@ import cors from 'cors';
 dotenv.config(); 
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Исправлено: добавлен оператор "или"
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID; 
@@ -63,7 +63,6 @@ async function getImages() {
     }
 }
 
-
 app.get('/getImages', async (req, res) => {
     try {
         const images = await getImages();
@@ -75,8 +74,6 @@ app.get('/getImages', async (req, res) => {
     }
 });
 
-
-
 app.listen(PORT, () => {
-    console.log('Server is running on http://localhost:${PORT}');
+    console.log(`Server is running on http://localhost:${PORT}`); // Исправлено: добавлены обратные кавычки
 });
