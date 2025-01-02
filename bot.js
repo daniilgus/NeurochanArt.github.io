@@ -3,9 +3,11 @@ const fetch = require('node-fetch');
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
+// Хранилище для идентификаторов загруженных изображений
+let loadedImageIds = new Set();
+
 async function getImages() {
     try {
-        // Получаем последние сообщения из канала
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
         if (!response.ok) {
             throw new Error(`Failed to fetch updates: ${response.statusText}`);
@@ -23,6 +25,14 @@ async function getImages() {
             if (update.channel_post && update.channel_post.photo) {
                 const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
                 const fileId = photo.file_id;
+
+                // Проверяем, было ли это изображение уже загружено
+                if (loadedImageIds.has(fileId)) {
+                    continue; // Пропускаем, если изображение уже загружено
+                }
+
+                // Добавляем идентификатор в хранилище
+                loadedImageIds.add(fileId);
 
                 // Получаем информацию о файле
                 const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
