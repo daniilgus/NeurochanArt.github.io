@@ -1,7 +1,7 @@
 const fetch = require('node-fetch'); 
 
-const TOKEN = '8195705425:AAHjFZI_WI3xkXyGTqKDH3M8x67m48xAInc';
-const CHAT_ID = '-1002287069041'; 
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 let lastUpdateId = 0;
 
 async function getImages() {
@@ -17,18 +17,24 @@ async function getImages() {
 
             const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
             if (!fileResponse.ok) {
-                continue;
+                continue; // Пропускаем, если файл недоступен
             }
 
             const fileData = await fileResponse.json();
             const filePath = fileData.result.file_path;
+
+            // Проверяем доступность файла по URL
+            const imageCheckResponse = await fetch(`https://api.telegram.org/file/bot${TOKEN}/${filePath}`);
+            if (!imageCheckResponse.ok) {
+                continue; // Пропускаем, если изображение недоступно
+            }
 
             const text = update.channel_post.text || update.channel_post.caption || "";
             const authorMatch = text.match(/Автор:(.*)/); 
             const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; 
 
             images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: authorText });
-            lastUpdateId = update.update_id;
+            lastUpdateId = update.update_id; // Обновляем lastUpdateId
         }
     }
 
