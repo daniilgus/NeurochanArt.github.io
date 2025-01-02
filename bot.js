@@ -1,6 +1,6 @@
-const fetch = require('node-fetch'); 
+const fetch = require('node-fetch');
 
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 async function getImages() {
@@ -24,6 +24,7 @@ async function getImages() {
                 const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
                 const fileId = photo.file_id;
 
+                // Получаем информацию о файле
                 const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
                 if (!fileResponse.ok) {
                     console.error(`File not found for file_id: ${fileId}`);
@@ -42,20 +43,21 @@ async function getImages() {
                 }
 
                 const text = update.channel_post.text || update.channel_post.caption || "";
-                const authorMatch = text.match(/Автор:(.*)/); 
-                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; 
+                const authorMatch = text.match(/Автор:(.*)/);
+                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
 
                 images.push({ url: imageUrl, text: text, author: authorText });
             }
         }
 
-        return images;
+        return images; // Возвращаем только актуальные изображения
     } catch (error) {
         console.error('Error fetching images:', error.message);
         throw error; // Пробрасываем ошибку дальше
     }
 }
 
+// Пример вызова функции для получения изображений
 getImages().then(images => {
     console.log(images); 
 }).catch(err => console.error(err));
