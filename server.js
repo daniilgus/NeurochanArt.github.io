@@ -2,33 +2,30 @@ import express from 'express';
 import fetch from 'node-fetch';
 import path from 'path';
 import dotenv from 'dotenv'; 
-import cors from 'cors'; 
+import cors from 'cors'; // Добавим CORS
 
 dotenv.config(); 
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Исправлено: добавлен оператор "или"
+const PORT = process.env.PORT || 3000;
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID; 
 
-app.use(cors()); 
+app.use(cors()); // Включаем CORS
 app.use(express.static('public')); 
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public', 'app.html'));
+    res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
 });
 
 async function getImages() {
     try {
-        console.log(`Fetching updates with token: ${TOKEN}`);
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
-
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
         const data = await response.json();
         console.log('Received data from Telegram:', data);
 
@@ -38,24 +35,19 @@ async function getImages() {
             if (update.channel_post && update.channel_post.photo) {
                 const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
                 const fileId = photo.file_id;
-
                 const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
-
                 if (!fileResponse.ok) {
                     console.error(`HTTP error! status: ${fileResponse.status}`);
                     throw new Error(`HTTP error! status: ${fileResponse.status}`);
                 }
-
                 const fileData = await fileResponse.json();
                 const filePath = fileData.result.file_path;
                 const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
-
-                const username = update.channel_post.from ? update.channel_post.from.username || 'Неизвестный пользователь' : 'Неизвестный пользователь';
-
-                images.push({ imageUrl, username });
+                images.push(imageUrl);
             }
         }
 
+        console.log('Extracted images:', images); 
         return images;
     } catch (error) {
         console.error('Error fetching images:', error.message);
@@ -66,14 +58,13 @@ async function getImages() {
 app.get('/getImages', async (req, res) => {
     try {
         const images = await getImages();
-        console.log('Images fetched:', images);
-        res.json(images); 
+        res.json(images);
     } catch (error) {
-        console.error('Error in /getImages route:', error.message);
-        res.status(500).json({ error: 'Error fetching images', details: error.message });
+        console.error('Error in /getImages route:', error.message); 
+        res.status(500).send('Error fetching images');
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`); // Исправлено: добавлены обратные кавычки
+    console.log('Server is running on http://localhost:${PORT}');
 });
