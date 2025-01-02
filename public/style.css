@@ -45,6 +45,7 @@ body {
 .art-item {
     position: relative;
     cursor: pointer;
+    margin-bottom: 15px; /* Добавляем отступ между изображениями */
 }
 
 .art-item img {
@@ -52,11 +53,11 @@ body {
     height: auto;
     object-fit: cover;
     border-radius: 10px;
-    transition: transform 0.3s;
+    transition: transform 0.2s; /* Уменьшаем скорость увеличения */
 }
 
 .art-item:hover img {
-    transform: scale(1.05);
+    transform: scale(1.03); /* Уменьшаем увеличение при наведении */
 }
 
 .art-item:hover::after {
@@ -65,7 +66,8 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.5); /* Прозрачный фон с эффектом блюра */
+    backdrop-filter: blur(5px); /* Эффект блюра */
     color: white;
     padding: 10px;
     text-align: center;
