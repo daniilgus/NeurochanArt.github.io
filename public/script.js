@@ -4,7 +4,15 @@ async function loadArts() {
 
     try {
         const response = await fetch('/getImages'); 
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
         const images = await response.json();
+
+        if (images.length === 0) {
+            artContainer.innerHTML = '<p>No images available.</p>';
+            return;
+        }
 
         images.forEach(image => {
             const artItem = document.createElement('div');
@@ -21,16 +29,18 @@ async function loadArts() {
         });
     } catch (error) {
         console.error('Error loading arts:', error);
+        artContainer.innerHTML = '<p>Error loading images. Please try again later.</p>';
     }
 }
 
+// Функция для автоматического обновления изображений каждые 10 секунд
+setInterval(loadArts, 10000);
 
 function openModal(imageUrl, text) {
     document.getElementById('modalImage').src = imageUrl;
     document.getElementById('modalText').innerHTML = text;
     document.getElementById('modal').style.display = 'block';
 }
-
 
 function closeModal() {
     document.getElementById('modal').style.display = 'none';
