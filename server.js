@@ -65,7 +65,7 @@ async function getImages() {
 
 app.get('/getImages', async (req, res) => {
     try {
-        const images = await getImages();
+        const images = await getValidImages(); // Используем новую функцию
         res.json(images);
     } catch (error) {
         console.error('Error in /getImages route:', error.message);
