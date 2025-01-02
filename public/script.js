@@ -1,4 +1,5 @@
 async function loadArts() {
+    console.log('Loading arts...'); // Отладочный вывод
     const artContainer = document.getElementById('artContainer');
     artContainer.innerHTML = '';
 
@@ -6,11 +7,13 @@ async function loadArts() {
         const response = await fetch('/getImages'); 
         const images = await response.json();
 
+        artContainer.innerHTML = ''; 
+
         images.forEach(image => {
             const artItem = document.createElement('div');
             artItem.className = 'art-item';
             artItem.innerHTML = `
-                <img src="${image.url}" alt="User Art">
+                <img src="${image.url}" alt="User  Art">
                 <p>${image.text}</p> 
             `;
             artContainer.appendChild(artItem);
@@ -20,7 +23,9 @@ async function loadArts() {
     }
 }
 
+// Используйте один обработчик window.onload
 window.onload = loadArts;
+
 
 async function fetchImages() {
     try {
@@ -70,7 +75,6 @@ fetch('/getImages')
 
 
 window.onload = fetchImages;
-window.onload = loadArts;
 
 
 
