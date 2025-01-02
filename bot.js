@@ -1,13 +1,11 @@
-const fetch = require('node-fetch');
+const fetch = require('node-fetch'); 
 
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-
-// Хранилище для идентификаторов загруженных изображений
-let loadedImageIds = new Set();
 
 async function getImages() {
     try {
+        // Получаем последние сообщения из канала
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
         if (!response.ok) {
             throw new Error(`Failed to fetch updates: ${response.statusText}`);
@@ -26,15 +24,6 @@ async function getImages() {
                 const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
                 const fileId = photo.file_id;
 
-                // Проверяем, было ли это изображение уже загружено
-                if (loadedImageIds.has(fileId)) {
-                    continue; // Пропускаем, если изображение уже загружено
-                }
-
-                // Добавляем идентификатор в хранилище
-                loadedImageIds.add(fileId);
-
-                // Получаем информацию о файле
                 const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
                 if (!fileResponse.ok) {
                     console.error(`File not found for file_id: ${fileId}`);
@@ -43,38 +32,29 @@ async function getImages() {
 
                 const fileData = await fileResponse.json();
                 const filePath = fileData.result.file_path;
-                const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
 
                 // Проверяем доступность файла по URL
-                const imageCheckResponse = await fetch(imageUrl);
+                const imageCheckResponse = await fetch(`https://api.telegram.org/file/bot${TOKEN}/${filePath}`);
                 if (!imageCheckResponse.ok) {
-                    console.error(`Image not accessible at: ${imageUrl}`);
+                    console.error(`Image not accessible at: https://api.telegram.org/file/bot${TOKEN}/${filePath}`);
                     continue; // Пропускаем, если изображение недоступно
                 }
 
                 const text = update.channel_post.text || update.channel_post.caption || "";
-                const authorMatch = text.match(/Автор:(.*)/);
-                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
+                const authorMatch = text.match(/Автор:(.*)/); 
+                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; 
 
-                images.push({ url: imageUrl, text: text, author: authorText });
+                images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: authorText });
             }
         }
 
-        // Удаляем дубликаты изображений
-        const uniqueImages = images.filter((image, index, self) =>
-            index === self.findIndex((t) => (
-                t.url === image.url
-            ))
-        );
-
-        return uniqueImages; // Возвращаем только актуальные изображения
+        return images;
     } catch (error) {
         console.error('Error fetching images:', error.message);
         throw error; // Пробрасываем ошибку дальше
     }
 }
 
-// Пример вызова функции для получения изображений
 getImages().then(images => {
     console.log(images); 
 }).catch(err => console.error(err));
