@@ -21,7 +21,6 @@ app.get('/', (req, res) => {
 
 async function getImages() {
     try {
-        
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`);
@@ -48,8 +47,12 @@ async function getImages() {
                 // Извлекаем текст сообщения или подпись
                 const text = update.channel_post.text || update.channel_post.caption || "";
 
-                // Добавляем объект с изображением и текстом в массив
-                images.push({ url: imageUrl, text: text });
+                // Ищем текст после "Автор"
+                const authorMatch = text.match(/Автор:(.*)/); // Регулярное выражение для поиска текста после "Автор:"
+                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; // Если совпадение найдено, берем его, иначе - "Неизвестный автор"
+
+                // Добавляем объект с изображением, текстом и автором в массив
+                images.push({ url: imageUrl, text: text, author: authorText });
             }
         }
 
