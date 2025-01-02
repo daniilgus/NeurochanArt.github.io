@@ -2,9 +2,10 @@ const fetch = require('node-fetch');
 
 const TOKEN = '8195705425:AAHjFZI_WI3xkXyGTqKDH3M8x67m48xAInc';
 const CHAT_ID = '-1002287069041'; 
+let lastUpdateId = 0;
 
 async function getImages() {
-    const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
+    const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${lastUpdateId + 1}`);
     const data = await response.json();
 
     const images = [];
@@ -27,6 +28,7 @@ async function getImages() {
             const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; 
 
             images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: authorText });
+            lastUpdateId = update.update_id;
         }
     }
 
