@@ -32,11 +32,12 @@ async function getImages() {
 
                 const fileData = await fileResponse.json();
                 const filePath = fileData.result.file_path;
+                const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
 
                 // Проверяем доступность файла по URL
-                const imageCheckResponse = await fetch(`https://api.telegram.org/file/bot${TOKEN}/${filePath}`);
+                const imageCheckResponse = await fetch(imageUrl);
                 if (!imageCheckResponse.ok) {
-                    console.error(`Image not accessible at: https://api.telegram.org/file/bot${TOKEN}/${filePath}`);
+                    console.error(`Image not accessible at: ${imageUrl}`);
                     continue; // Пропускаем, если изображение недоступно
                 }
 
@@ -44,7 +45,7 @@ async function getImages() {
                 const authorMatch = text.match(/Автор:(.*)/); 
                 const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; 
 
-                images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: authorText });
+                images.push({ url: imageUrl, text: text, author: authorText });
             }
         }
 
