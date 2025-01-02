@@ -19,6 +19,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
 });
 
+// Хранилище для идентификаторов загруженных изображений
+let loadedImageIds = new Set();
+
 async function getImages() {
     try {
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
@@ -35,6 +38,14 @@ async function getImages() {
             if (update.channel_post && update.channel_post.photo) {
                 const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
                 const fileId = photo.file_id;
+
+                // Проверяем, было ли это изображение уже загружено
+                if (loadedImageIds.has(fileId)) {
+                    continue; // Пропускаем, если изображение уже загружено
+                }
+
+                // Добавляем идентификатор в хранилище
+                loadedImageIds.add(fileId);
 
                 // Получаем информацию о файле
                 const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
