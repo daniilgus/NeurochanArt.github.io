@@ -9,12 +9,12 @@ async function loadArts() {
         images.forEach(image => {
             const artItem = document.createElement('div');
             artItem.className = 'art-item';
-            artItem.setAttribute('data-text', image.text.substring(0, 20) + '...');
+            artItem.setAttribute('data-text', `Автор: ${image.author}`); 
 
             const img = document.createElement('img');
             img.src = image.url;
             img.alt = "User  Art";
-            img.onclick = () => openModal(image.url, image.text);
+            img.onclick = () => openModal(image.url, image.text); 
 
             artItem.appendChild(img);
             artContainer.appendChild(artItem);
@@ -23,6 +23,7 @@ async function loadArts() {
         console.error('Error loading arts:', error);
     }
 }
+
 
 function openModal(imageUrl, text) {
     document.getElementById('modalImage').src = imageUrl;
