@@ -21,6 +21,7 @@ app.get('/', (req, res) => {
 
 async function getImages() {
     try {
+        
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`);
