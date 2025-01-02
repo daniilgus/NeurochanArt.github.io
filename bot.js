@@ -24,33 +24,35 @@ async function getImages() {
 
     const images = [];
     const existingIds = readMessageIds(); // Считываем существующие идентификаторы
+    const currentIds = new Set(existingIds); // Используем Set для быстрого поиска
 
     for (const update of data.result) {
         if (update.channel_post && update.channel_post.photo) {
             const messageId = update.channel_post.message_id; // Получаем идентификатор сообщения
-            if (!existingIds.includes(messageId)) { // Проверяем, есть ли он уже в списке
-                const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
-                const fileId = photo.file_id;
+            const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
+            const fileId = photo.file_id;
 
-                const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
-                const fileData = await fileResponse.json();
-                const filePath = fileData.result.file_path;
+            const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
+            const fileData = await fileResponse.json();
+            const filePath = fileData.result.file_path;
 
-                const text = update.channel_post.text || update.channel_post.caption || "";
+            const text = update.channel_post.text || update.channel_post.caption || "";
 
-                const authorMatch = text.match(/Автор:(.*)/);
-                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
+            const authorMatch = text.match(/Автор:(.*)/);
+            const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
 
+            // Проверяем, есть ли идентификатор в существующих
+            if (!currentIds.has(messageId)) {
                 images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: authorText });
-                existingIds.push(messageId); // Добавляем новый идентификатор в список
+                currentIds.add(messageId); // Добавляем новый идентификатор в Set
             }
         }
     }
 
-    writeMessageIds(existingIds); // Сохраняем обновленный список идентификаторов
+    // Обновляем список идентификаторов
+    writeMessageIds(Array.from(currentIds)); // Сохраняем обновленный список идентификаторов
     return images;
 }
-
 getImages().then(images => {
     console.log(images); 
 }).catch(err => console.error(err));
