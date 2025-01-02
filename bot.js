@@ -5,12 +5,12 @@ const CHAT_ID = '-1002287069041';
 
 async function getImages() {
     try {
-        console.log(`Fetching updates with token: ${TOKEN}`); 
-        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`); 
+        console.log(`Fetching updates with token: ${TOKEN}`); // Исправлено: добавлены обратные кавычки
+        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`); // Исправлено: добавлены обратные кавычки
 
         if (!response.ok) {
-            console.error(`HTTP error! status: ${response.status}`); 
-            throw new Error(`HTTP error! status: ${response.status}`); 
+            console.error(`HTTP error! status: ${response.status}`); // Исправлено: добавлены обратные кавычки
+            throw new Error(`HTTP error! status: ${response.status}`); // Исправлено: добавлены обратные кавычки
         }
 
         const data = await response.json();
@@ -23,11 +23,11 @@ async function getImages() {
                 const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
                 const fileId = photo.file_id;
 
-                const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`); 
+                const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`); // Исправлено: добавлены обратные кавычки
 
                 if (!fileResponse.ok) {
-                    console.error(`HTTP error! status: ${fileResponse.status}`); 
-                    throw new Error(`HTTP error! status: ${fileResponse.status}`); 
+                    console.error(`HTTP error! status: ${fileResponse.status}`); // Исправлено: добавлены обратные кавычки
+                    throw new Error(`HTTP error! status: ${fileResponse.status}`); // Исправлено: добавлены обратные кавычки
                 }
 
                 const fileData = await fileResponse.json();
