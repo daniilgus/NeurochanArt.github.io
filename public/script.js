@@ -35,3 +35,10 @@ function closeModal() {
 }
 
 window.onload = loadArts;
+
+window.onclick = function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target === modal) {
+        closeModal();
+    }
+}
