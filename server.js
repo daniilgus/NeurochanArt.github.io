@@ -2,6 +2,7 @@ import express from 'express';
 import fetch from 'node-fetch';
 import path from 'path';
 import dotenv from 'dotenv'; 
+import cors from 'cors'; // Добавим CORS
 
 dotenv.config(); 
 
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID; 
 
+app.use(cors()); // Включаем CORS
 app.use(express.static('public')); 
 
 app.get('/', (req, res) => {
@@ -21,6 +23,7 @@ async function getImages() {
     try {
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
         if (!response.ok) {
+            console.error(`HTTP error! status: ${response.status}`);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
@@ -34,6 +37,7 @@ async function getImages() {
                 const fileId = photo.file_id;
                 const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
                 if (!fileResponse.ok) {
+                    console.error(`HTTP error! status: ${fileResponse.status}`);
                     throw new Error(`HTTP error! status: ${fileResponse.status}`);
                 }
                 const fileData = await fileResponse.json();
@@ -62,5 +66,5 @@ app.get('/getImages', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log('Server is running on http://localhost:${PORT}');
 });
