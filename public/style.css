@@ -15,7 +15,7 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     background-color: var(--background-color);
     color: var(--text-color);
@@ -31,7 +31,7 @@ body {
 }
 
 .header h1 {
-    font-family: 'Georgia', serif;
+    font-family: 'Roboto', sans-serif;
     color: var(--header-color);
     cursor: pointer;
 }
@@ -45,7 +45,7 @@ body {
 .art-item {
     position: relative;
     cursor: pointer;
-    margin-bottom: 15px; /* Добавляем отступ между изображениями */
+    margin-bottom: 15px;
 }
 
 .art-item img {
@@ -53,10 +53,10 @@ body {
     height: auto;
     object-fit: cover;
     border-radius: 10px;
-    transition: transform 0.2s; /* Уменьшаем скорость увеличения */
+    transition: transform 0.2s;
 }
 
-.art-item:hover{
+.art-item:hover {
     transform: scale(1.015);
 }
 
@@ -66,24 +66,23 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.5); /* Прозрачный фон с эффектом блюра */
-    backdrop-filter: blur(5px); /* Эффект блюра */
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
     color: white;
     padding: 10px;
     text-align: center;
     border-radius: 0 0 10px 10px;
     overflow: hidden;
-    white-space: nowrap; /* Убедитесь, что текст не переносится */
-    text-overflow: ellipsis; /* Добавляем многоточие, если текст длинный */
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
-
 
 .user_container {
     background: var(--container-background);
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-    margin: 30px auto;
+    box-shadow: 0 8px 30px rgba(0, 0, 255, 0.5);
+    margin: 30pxauto;
     width: 90%;
     max-width: 1200px;
 }
@@ -95,6 +94,15 @@ footer {
     margin-top: auto;
 }
 
+footer a {
+    color: #0071f1;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -103,7 +111,7 @@ footer {
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
     background-color: rgba(0, 0, 0, 0.8);
 }
 
@@ -112,7 +120,7 @@ footer {
     margin: 15% auto;
     padding: 20px;
     border-radius: 15px;
-    width: 40%; /* Уменьшаем ширину модального окна */
+    width: 40%;
     display: flex;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
@@ -123,7 +131,6 @@ footer {
     margin-right: 20px;
     margin-left: 10px;
 }
-
 .close {
     color: #aaa;
     float: right;
@@ -148,7 +155,6 @@ footer {
     padding: 10px; 
     white-space: pre-wrap; 
 }
-
 
 @media (min-width: 768px) {
     .header h1 {
