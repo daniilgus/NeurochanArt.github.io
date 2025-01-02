@@ -2,7 +2,7 @@ import express from 'express';
 import fetch from 'node-fetch';
 import path from 'path';
 import dotenv from 'dotenv'; 
-import cors from 'cors'; // Добавим CORS
+import cors from 'cors'; 
 
 dotenv.config(); 
 
@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID; 
 
-app.use(cors()); // Включаем CORS
+app.use(cors()); 
 app.use(express.static('public')); 
 
 app.get('/', (req, res) => {
@@ -43,7 +43,9 @@ async function getImages() {
                 const fileData = await fileResponse.json();
                 const filePath = fileData.result.file_path;
                 const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
-                images.push(imageUrl);
+
+                const username = update.channel_post.from.username || 'Неизвестный пользователь';
+                images.push({ imageUrl, username });
             }
         }
 
@@ -55,15 +57,17 @@ async function getImages() {
     }
 }
 
+
 app.get('/getImages', async (req, res) => {
     try {
         const images = await getImages();
-        res.json(images);
+        res.json(images); 
     } catch (error) {
         console.error('Error in /getImages route:', error.message); 
         res.status(500).send('Error fetching images');
     }
 });
+
 
 app.listen(PORT, () => {
     console.log('Server is running on http://localhost:${PORT}');
