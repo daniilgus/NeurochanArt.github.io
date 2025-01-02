@@ -142,6 +142,13 @@ footer {
     cursor: pointer;
 }
 
+.modal-content p {
+    margin: 0;
+    padding: 10px; 
+    white-space: pre-wrap; 
+}
+
+
 @media (min-width: 768px) {
     .header h1 {
         font-size: 2em;
