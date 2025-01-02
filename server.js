@@ -63,6 +63,8 @@ async function getImages() {
         throw error;
     }
 }
+
+
 app.get('/getImages', async (req, res) => {
     try {
         const images = await getImages();
