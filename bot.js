@@ -16,8 +16,9 @@ async function getImages() {
         const images = [];
 
         if (!data.result || data.result.length === 0) {
-            console.log('No updates found.');
-            return cachedImages; // Возвращаем кэшированные изображения, если нет новых обновлений
+            console.log('No updates found. Clearing cached images.');
+            cachedImages = []; // Очищаем кэш, если нет новых обновлений
+            return images; // Возвращаем пустой массив
         }
 
         for (const update of data.result) {
@@ -49,7 +50,7 @@ async function getImages() {
             }
         }
 
-        // Обновляем кэш изображений
+        // Обновляем кэш изображений только если они доступны
         cachedImages = images;
 
         return images;
@@ -58,6 +59,22 @@ async function getImages() {
         throw error;
     }
 }
+
+// Функция для получения изображений с проверкой доступности
+async function getValidImages() {
+    const validImages = [];
+    for (const image of cachedImages) {
+        const imageCheckResponse = await fetch(image.url);
+        if (imageCheckResponse.ok) {
+            validImages.push(image);
+        } else {
+            console.log(`Image not accessible: ${image.url}`);
+        }
+    }
+    cachedImages = validImages; // Обновляем кэш с доступными изображениями
+    return validImages;
+}
+
 
 
 getImages().then(images => {
