@@ -32,6 +32,7 @@ async function getImages() {
         const images = [];
 
         for (const update of data.result) {
+            // Проверяем, что у нас есть channel_post и photo
             if (update.channel_post && update.channel_post.photo) {
                 const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
                 const fileId = photo.file_id;
