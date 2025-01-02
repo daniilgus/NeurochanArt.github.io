@@ -23,9 +23,6 @@ async function loadArts() {
     }
 }
 
-// Используйте один обработчик window.onload
-window.onload = loadArts;
-
 
 async function fetchImages() {
     try {
@@ -75,7 +72,7 @@ fetch('/getImages')
 
 
 window.onload = fetchImages;
-
+window.onload = loadArts;
 
 
 
