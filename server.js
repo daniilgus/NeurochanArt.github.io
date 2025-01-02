@@ -19,9 +19,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
 });
 
+let lastUpdateId = 0; // Переменная для хранения последнего ID обновления
+
 async function getImages() {
     try {
-        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
+        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${lastUpdateId + 1}`);
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`);
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -35,6 +37,8 @@ async function getImages() {
             if (update.channel_post && update.channel_post.photo) {
                 const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
                 const fileId = photo.file_id;
+
+                // Получаем информацию о файле
                 const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
                 if (!fileResponse.ok) {
                     console.error(`File not found for file_id: ${fileId}`);
@@ -50,6 +54,11 @@ async function getImages() {
                 const authorMatch = text.match(/Автор:(.*)/);
                 const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
                 images.push({ url: imageUrl, text: text, author: authorText });
+
+                // Обновляем lastUpdateId для предотвращения повторной обработки
+                if (update.update_id > lastUpdateId) {
+                    lastUpdateId = update.update_id; 
+                }
             }
         }
 
@@ -60,7 +69,6 @@ async function getImages() {
         throw error;
     }
 }
-
 
 app.get('/getImages', async (req, res) => {
     try {
