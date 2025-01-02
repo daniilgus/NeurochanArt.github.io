@@ -73,9 +73,10 @@ body {
     text-align: center;
     border-radius: 0 0 10px 10px;
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+    white-space: nowrap; /* Убедитесь, что текст не переносится */
+    text-overflow: ellipsis; /* Добавляем многоточие, если текст длинный */
 }
+
 
 .user_container {
     background: var(--container-background);
