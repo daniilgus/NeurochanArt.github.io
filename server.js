@@ -68,10 +68,11 @@ app.get('/getImages', async (req, res) => {
         const images = await getImages();
         res.json(images);
     } catch (error) {
-        console.error('Error in /getImages route:', error.message); 
+        console.error('Error in /getImages route:', error.message);
         res.status(500).send('Error fetching images');
     }
 });
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
