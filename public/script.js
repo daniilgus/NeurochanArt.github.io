@@ -1,21 +1,26 @@
-
 async function loadArts() {
     const artContainer = document.getElementById('artContainer');
     artContainer.innerHTML = '';
 
-    const response = await fetch('/getImages'); 
-    const images = await response.json();
+    try {
+        const response = await fetch('/getImages'); 
+        const images = await response.json();
 
-    images.forEach(imageUrl => {
-        const artItem = document.createElement('div');
-        artItem.className = 'art-item';
-        artItem.innerHTML = `
-            <img src="${imageUrl}" alt="UserArt">
-            <div>Username</div> 
-        `;
-        artContainer.appendChild(artItem);
-    });
+        images.forEach(image => {
+            const artItem = document.createElement('div');
+            artItem.className = 'art-item';
+            artItem.innerHTML = `
+                <img src="${image.url}" alt="User Art">
+                <p>${image.text}</p> 
+            `;
+            artContainer.appendChild(artItem);
+        });
+    } catch (error) {
+        console.error('Error loading arts:', error);
+    }
 }
+
+window.onload = loadArts;
 
 async function fetchImages() {
     try {
