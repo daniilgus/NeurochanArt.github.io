@@ -61,8 +61,15 @@ async function getImages() {
             }
         }
 
-        console.log('Extracted images:', images); 
-        return images;
+        // Фильтрация изображений по их доступности в канале
+        const uniqueImages = images.filter((image, index, self) =>
+            index === self.findIndex((t) => (
+                t.url === image.url
+            ))
+        );
+
+        console.log('Extracted images:', uniqueImages); 
+        return uniqueImages;
     } catch (error) {
         console.error('Error fetching images:', error.message);
         throw error;
