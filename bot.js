@@ -2,11 +2,11 @@ const fetch = require('node-fetch');
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-let lastUpdateId = 0;
 
 async function getImages() {
     try {
-        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates?offset=${lastUpdateId + 1}`);
+        // Получаем последние сообщения из канала
+        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
         if (!response.ok) {
             throw new Error(`Failed to fetch updates: ${response.statusText}`);
         }
@@ -15,8 +15,8 @@ async function getImages() {
         const images = [];
 
         if (!data.result || data.result.length === 0) {
-            console.log('No new updates.');
-            return images; // Возвращаем пустой массив, если нет новых обновлений
+            console.log('No updates found.');
+            return images; // Возвращаем пустой массив, если нет обновлений
         }
 
         for (const update of data.result) {
@@ -45,7 +45,6 @@ async function getImages() {
                 const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; 
 
                 images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: authorText });
-                lastUpdateId = Math.max(lastUpdateId, update.update_id); // Обновляем lastUpdateId только для новых обновлений
             }
         }
 
