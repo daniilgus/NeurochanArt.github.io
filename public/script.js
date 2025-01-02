@@ -9,12 +9,12 @@ async function loadArts() {
         images.forEach(image => {
             const artItem = document.createElement('div');
             artItem.className = 'art-item';
-            artItem.setAttribute('data-text', `Автор: ${image.author}`); // Изменяем текст для отображения при наведении
+            artItem.setAttribute('data-text', `Автор: ${image.author}`);
 
             const img = document.createElement('img');
             img.src = image.url;
             img.alt = "User  Art";
-            img.onclick = () => openModal(image.url, image.text); // Передаем полный текст в модальное окно
+            img.onclick = () => openModal(image.url, image.text);
 
             artItem.appendChild(img);
             artContainer.appendChild(artItem);
@@ -24,13 +24,11 @@ async function loadArts() {
     }
 }
 
-
 function openModal(imageUrl, text) {
     document.getElementById('modalImage').src = imageUrl;
-    document.getElementById('modalText').innerHTML = text; // Используем innerHTML для сохранения форматирования
+    document.getElementById('modalText').innerHTML = text; 
     document.getElementById('modal').style.display = 'block';
 }
-
 
 function closeModal() {
     document.getElementById('modal').style.display = 'none';
