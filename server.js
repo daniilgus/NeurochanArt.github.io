@@ -21,7 +21,6 @@ app.get('/', (req, res) => {
 
 async function getImages() {
     try {
-        
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`);
@@ -45,11 +44,11 @@ async function getImages() {
                 const filePath = fileData.result.file_path;
                 const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
 
-                // Извлекаем текст сообщения или подпись
                 const text = update.channel_post.text || update.channel_post.caption || "";
 
-                // Добавляем объект с изображением и текстом в массив
-                images.push({ url: imageUrl, text: text });
+                const authorMatch = text.match(/Автор:(.*)/);
+                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; 
+                images.push({ url: imageUrl, text: text, author: authorText });
             }
         }
 
@@ -60,6 +59,7 @@ async function getImages() {
         throw error;
     }
 }
+
 app.get('/getImages', async (req, res) => {
     try {
         const images = await getImages();
