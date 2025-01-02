@@ -13,9 +13,8 @@ const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 app.use(express.static('public')); 
 
-
 app.get('/', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public', 'index.html')); 
+    res.sendFile(path.join(process.cwd(), 'index.html')); 
 });
 
 async function getImages() {
