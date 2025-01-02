@@ -57,7 +57,11 @@ body {
 }
 
 .art-item:hover img {
-    transform: scale(1.03); /* Уменьшаем увеличение при наведении */
+    transform: scale(1.015); /* Уменьшаем увеличение при наведении */
+}
+
+.art-item:hover{
+    transform: scale(1.015);
 }
 
 .art-item:hover::after {
