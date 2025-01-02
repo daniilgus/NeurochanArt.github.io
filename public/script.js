@@ -1,6 +1,6 @@
 async function loadArts() {
     const artContainer = document.getElementById('artContainer');
-    artContainer.innerHTML = '';
+    artContainer.innerHTML = ''; // Очищаем контейнер перед загрузкой новых изображений
 
     try {
         const response = await fetch('/getImages'); 
@@ -33,21 +33,4 @@ async function loadArts() {
     }
 }
 
-function openModal(imageUrl, text) {
-    document.getElementById('modalImage').src = imageUrl;
-    document.getElementById('modalText').innerHTML = text;
-    document.getElementById('modal').style.display = 'block';
-}
-
-function closeModal() {
-    document.getElementById('modal').style.display = 'none';
-}
-
-window.onload = loadArts;
-
-window.onclick = function(event) {
-    const modal = document.getElementById('modal');
-    if (event.target === modal) {
-        closeModal();
-    }
-}
+window.onload = loadArts; // Загружаем изображения при загрузке страницы
