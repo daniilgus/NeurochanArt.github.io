@@ -39,9 +39,8 @@ body {
 }
 
 #artContainer {
-    display: grid; /* Используем CSS Grid */
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Адаптивные колонки */
-    gap: 15px; /* Отступы между элементами */
+    column-count: 3; /* Количество колонок по умолчанию */
+    column-gap: 15px; /* Отступы между колонками */
     padding: 20px;
 }
 
@@ -49,7 +48,8 @@ body {
     background-color: var(--list-item-background);
     border-radius: 10px;
     overflow: hidden; /* Обрезаем содержимое, выходящее за границы */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    break-inside: avoid; /* Избегаем разрыва плиток */
+    margin-bottom: 15px; /* Отступ между рядами */
 }
 
 .art-item img {
@@ -90,9 +90,13 @@ footer {
 }
 
 @media (max-width: 768px) {
-    /* Убираем специальные правила для flex, так как теперь используем grid */
+    #artContainer {
+        column-count: 2; /* На мобильных устройствах 2 колонки */
+    }
 }
 
 @media (max-width: 480px) {
-    /* Убираем специальные правила для flex, так как теперь используем grid */
+    #artContainer {
+        column-count: 1; /* На маленьких устройствах 1 колонка */
+    }
 }
