@@ -1,4 +1,4 @@
-const fetch = require('node-fetch'); 
+const fetch = require('node\-fetch'); 
 
 const TOKEN = '8195705425:AAHjFZI_WI3xkXyGTqKDH3M8x67m48xAInc';
 const CHAT_ID = '-1002287069041'; 
@@ -14,11 +14,15 @@ async function getImages() {
             const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
             const fileId = photo.file_id;
 
-            const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
+            const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`); 
             const fileData = await fileResponse.json();
             const filePath = fileData.result.file_path;
 
-            images.push(`https://api.telegram.org/file/bot${TOKEN}/${filePath}`); 
+            const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`; 
+
+            const username = update.channel_post.from.username || 'Неизвестный пользователь';
+
+            images.push({ imageUrl, username }); 
         }
     }
 
@@ -26,5 +30,5 @@ async function getImages() {
 }
 
 getImages().then(images => {
-    console.log(images); 
+    console.log(images);
 }).catch(err => console.error(err));
