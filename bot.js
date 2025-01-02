@@ -3,9 +3,10 @@ const fetch = require('node-fetch');
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
+let cachedImages = []; // Кэш для хранения изображений
+
 async function getImages() {
     try {
-        // Получаем последние сообщения из канала
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
         if (!response.ok) {
             throw new Error(`Failed to fetch updates: ${response.statusText}`);
@@ -16,7 +17,7 @@ async function getImages() {
 
         if (!data.result || data.result.length === 0) {
             console.log('No updates found.');
-            return images; // Возвращаем пустой массив, если нет обновлений
+            return cachedImages; // Возвращаем кэшированные изображения, если нет новых обновлений
         }
 
         for (const update of data.result) {
@@ -41,19 +42,23 @@ async function getImages() {
                 }
 
                 const text = update.channel_post.text || update.channel_post.caption || "";
-                const authorMatch = text.match(/Автор:(.*)/); 
-                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; 
+                const authorMatch = text.match(/Автор:(.*)/);
+                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
 
                 images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: authorText });
             }
         }
 
+        // Обновляем кэш изображений
+        cachedImages = images;
+
         return images;
     } catch (error) {
         console.error('Error fetching images:', error.message);
-        throw error; // Пробрасываем ошибку дальше
+        throw error;
     }
 }
+
 
 getImages().then(images => {
     console.log(images); 
