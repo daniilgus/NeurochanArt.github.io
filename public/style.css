@@ -58,18 +58,18 @@ body {
     border-radius: 5px;
 }
 
-
 .user_container {
     background: var(--container-background);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    width: 400px;
+    width: 90%;
+    max-width: 400px;
 }
 
 h1, h2 {
     color: var(--header-color);
-    text-align: left;
+    text-align: center;
 }
 
 #userList {
@@ -166,4 +166,28 @@ button:hover {
     border-radius: 10px;
     width: 300px;
     color: var(--text-color);
+}
+
+@media (min-width: 768px) {
+    body {
+        height: auto;
+    }
+
+    .user_container {
+        width: 600px;
+        padding: 40px;
+    }
+
+    .header-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .art-item {
+        width: 150px;
+    }
+
+    #artContainer {
+        justify-content: space-between;
+    }
 }
