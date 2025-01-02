@@ -16,7 +16,7 @@ app.use(cors()); // Включаем CORS
 app.use(express.static('public')); 
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'index.html')); 
+    res.sendFile(path.join(process.cwd(), 'app.html')); 
 });
 
 async function getImages() {
