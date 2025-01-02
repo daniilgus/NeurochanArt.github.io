@@ -43,7 +43,12 @@ async function getImages() {
                 const fileData = await fileResponse.json();
                 const filePath = fileData.result.file_path;
                 const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
-                images.push(imageUrl);
+
+                // Извлекаем текст сообщения
+                const text = update.channel_post.text || ""; // Если текста нет, используем пустую строку
+
+                // Добавляем объект с изображением и текстом в массив
+                images.push({ url: imageUrl, text: text });
             }
         }
 
@@ -64,6 +69,7 @@ app.get('/getImages', async (req, res) => {
         res.status(500).send('Error fetching images');
     }
 });
+
 
 app.listen(PORT, () => {
     console.log('Server is running on http://localhost:${PORT}');
