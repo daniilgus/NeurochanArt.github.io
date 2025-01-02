@@ -6,7 +6,7 @@ const CHAT_ID = '-1002287069041';
 async function getImages() {
     try {
         console.log(`Fetching updates with token: ${TOKEN}`); 
-        const response = await fetch(`https://api.telegram.org/bot${TOKEN}getUpdates`); 
+        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`); 
 
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`); 
@@ -23,7 +23,7 @@ async function getImages() {
                 const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
                 const fileId = photo.file_id;
 
-                const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}getFile?file_id=${fileId}`); 
+                const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`); 
 
                 if (!fileResponse.ok) {
                     console.error(`HTTP error! status: ${fileResponse.status}`); 
@@ -32,7 +32,7 @@ async function getImages() {
 
                 const fileData = await fileResponse.json();
                 const filePath = fileData.result.file_path;
-                const imageUrl = `https://api.telegram.org/file/bot${TOKEN}${filePath}`;
+                const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
                 const username = update.channel_post.from ? update.channel_post.from.username || 'Неизвестный пользователь' : 'Неизвестный пользователь'; 
 
                 images.push({ imageUrl, username });
