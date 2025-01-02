@@ -64,16 +64,17 @@ async function getImages() {
 }
 
 
-
 app.get('/getImages', async (req, res) => {
     try {
         const images = await getImages();
+        console.log('Images fetched:', images);
         res.json(images); 
     } catch (error) {
-        console.error('Error in /getImages route:', error.message); 
-        res.status(500).send('Error fetching images');
+        console.error('Error in /getImages route:', error.message);
+        res.status(500).json({ error: 'Error fetching images', details: error.message });
     }
 });
+
 
 
 app.listen(PORT, () => {
