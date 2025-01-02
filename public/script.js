@@ -38,31 +38,6 @@ async function fetchImages() {
     }
 }
 
-fetch('/getImages')
-    .then(response => response.json())
-    .then(images => {
-        const artContainer = document.getElementById('artContainer');
-        artContainer.innerHTML = ''; // Очистить контейнер перед добавлением новых изображений
-
-        images.forEach(image => {
-            const div = document.createElement('div');
-            div.classList.add('art-item');
-
-            const img = document.createElement('img');
-            img.src = image.url;
-            img.alt = image.text;
-
-            const text = document.createElement('p');
-            text.textContent = image.text; // Убедитесь, что это свойство правильно извлекается
-
-            div.appendChild(img);
-            div.appendChild(text);
-            artContainer.appendChild(div);
-        });
-    })
-    .catch(err => console.error(err));
-
-
 
 window.onload = fetchImages;
 window.onload = loadArts;
