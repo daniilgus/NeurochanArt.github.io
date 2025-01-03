@@ -104,6 +104,16 @@ app.get('/getImages', async (req, res) => {
     }
 });
 
+app.delete('/clearMessages', (req, res) => {
+    try {
+        fs.writeFileSync('messages.json', JSON.stringify([])); // Очищаем файл
+        res.status(200).send('messages.json has been cleared');
+    } catch (error) {
+        console.error('Error clearing messages.json:', error.message);
+        res.status(500).send('Error clearing messages.json');
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
