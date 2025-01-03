@@ -10,6 +10,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.static('public'));
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
+});
 // Middleware для отключения кеширования
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -69,6 +72,11 @@ const extractImageIdFromText = (text) => {
 app.get('/getImages', (req, res) => {
     const activeImages = allImages.filter(img => img.active); // Фильтруем только активные изображения
     res.json(activeImages);
+});
+
+// Обработчик для корневого маршрута
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Отправляем HTML-файл
 });
 
 // Запуск сервера
