@@ -11,10 +11,16 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.static('public')); 
 
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    next();
+});
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
 });
-
 // Хранение изображений в памяти
 let currentImages = [];
 
