@@ -1,8 +1,8 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 
-const TOKEN = '8195705425:AAGEBMFz4SDca5NLicRIwhr8JyqsIRTbp7I'; // Замените на ваш токен
-const CHAT_ID = '-1002287069041'; 
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 // Функция для чтения идентификаторов сообщений из файла
 function readMessageIds() {
@@ -24,33 +24,38 @@ async function getImages() {
 
     const images = [];
     const existingIds = readMessageIds(); // Считываем существующие идентификаторы
+    const currentIds = new Set(existingIds); // Используем Set для быстрого поиска
 
     for (const update of data.result) {
         if (update.channel_post && update.channel_post.photo) {
             const messageId = update.channel_post.message_id; // Получаем идентификатор сообщения
-            if (!existingIds.includes(messageId)) { // Проверяем, есть ли он уже в списке
-                const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
-                const fileId = photo.file_id;
+            const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
+            const fileId = photo.file_id;
 
-                const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
-                const fileData = await fileResponse.json();
-                const filePath = fileData.result.file_path;
+            const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
+            const fileData = await fileResponse.json();
+            const filePath = fileData.result.file_path;
 
-                const text = update.channel_post.text || update.channel_post.caption || "";
+            const text = update.channel_post.text || update.channel_post.caption || "";
 
-                const authorMatch = text.match(/Автор:(.*)/);
-                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
+            const authorMatch = text.match(/Автор:(.*)/);
+            const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
 
-                images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: authorText });
-                existingIds.push(messageId); // Добавляем новый идентификатор в список
-            }
+            images.push({ url: `https://api.telegram.org/file/bot${TOKEN}/${filePath}`, text: text, author: authorText });
+            currentIds.add(messageId); // Добавляем новый идентификатор в Set
         }
     }
 
-    writeMessageIds(existingIds); // Сохраняем обновленный список идентификаторов
+    // Проверяем, какие идентификаторы отсутствуют
+    const deletedIds = existingIds.filter(id => !currentIds.has(id));
+    if (deletedIds.length > 0) {
+        console.log('Удаленные идентификаторы:', deletedIds);
+        // Здесь вы можете добавить логику для удаления изображений с сайта
+    }
+
+    writeMessageIds(Array.from(currentIds)); // Сохраняем обновленный список идентификаторов
     return images;
 }
-
 getImages().then(images => {
-    console.log(images); 
+    console.log(images);
 }).catch(err => console.error(err));
