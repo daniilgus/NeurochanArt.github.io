@@ -46,6 +46,7 @@ async function getImages() {
         const images = [];
         const existingIds = readMessageIds(); // Считываем существующие идентификаторы
         const currentIds = new Set(existingIds); // Используем Set для быстрого поиска
+        const newIds = new Set(); // Новый набор идентификаторов для текущих сообщений
 
         for (const update of data.result) {
             if (update.channel_post && update.channel_post.photo) {
@@ -66,16 +67,19 @@ async function getImages() {
                 const authorMatch = text.match(/Автор:(.*)/);
                 const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
 
-                // Проверяем, есть ли идентификатор в существующих
-                if (!currentIds.has(messageId)) {
+                // Добавляем идентификатор в новый набор
+                newIds.add(messageId);
+                // Если идентификатор новый, добавляем изображение в массив
+                if
+                (!currentIds.has(messageId)) {
                     images.push({ url: imageUrl, text: text, author: authorText });
-                    currentIds.add(messageId); // Добавляем новый идентификатор в Set
                 }
             }
         }
 
-        // Обновляем список идентификаторов
-        writeMessageIds(Array.from(currentIds)); // Сохраняем обновленный список идентификаторов
+        // Удаляем идентификаторы, которые больше не существуют
+        const updatedIds = existingIds.filter(id => newIds.has(id));
+        writeMessageIds(updatedIds); // Сохраняем обновленный список идентификаторов
         console.log('Extracted images:', images); 
         return images;
     } catch (error) {
@@ -83,6 +87,7 @@ async function getImages() {
         throw error;
     }
 }
+
 app.get('/getImages', async (req, res) => {
     try {
         const images = await getImages();
