@@ -41,41 +41,49 @@ async function getImages() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Received data from Telegram:', data);
+        console.log('Полученные данные от Telegram:', data);
 
         const images = [];
         const existingIds = readMessageIds(); // Считываем существующие идентификаторы
+        const currentIds = new Set(existingIds); // Используем Set для быстрого поиска
 
         for (const update of data.result) {
             if (update.channel_post && update.channel_post.photo) {
                 const messageId = update.channel_post.message_id; // Получаем идентификатор сообщения
-                if (!existingIds.includes(messageId)) { // Проверяем, есть ли он уже в списке
-                    const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
-                    const fileId = photo.file_id;
-                    const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
-                    if (!fileResponse.ok) {
-                        console.error(`HTTP error! status: ${fileResponse.status}`);
-                        throw new Error(`HTTP error! status: ${fileResponse.status}`);
-                    }
-                    const fileData = await fileResponse.json();
-                    const filePath = fileData.result.file_path;
-                    const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
+                const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
+                const fileId = photo.file_id;
 
-                    const text = update.channel_post.text || update.channel_post.caption || "";
-                    const authorMatch = text.match(/Автор:(.*)/);
-                    const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
-
-                    images.push({ url: imageUrl, text: text, author: authorText });
-                    existingIds.push(messageId); // Добавляем новый идентификатор в список
+                const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
+                if (!fileResponse.ok) {
+                    console.error(`HTTP error! status: ${fileResponse.status}`);
+                    throw new Error(`HTTP error! status: ${fileResponse.status}`);
                 }
+                const fileData = await fileResponse.json();
+                const filePath = fileData.result.file_path;
+                const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
+
+                const text = update.channel_post.text || update.channel_post.caption || "";
+                const authorMatch = text.match(/Автор:(.*)/);
+                const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
+
+                images.push({ url: imageUrl, text: text, author: authorText });
+                currentIds.add(messageId); // Добавляем новый идентификатор в Set
             }
         }
 
-        writeMessageIds(existingIds); // Сохраняем обновленный список идентификаторов
-        console.log('Extracted images:', images); 
+        // Проверяем, какие идентификаторы отсутствуют
+        const deletedIds = existingIds.filter(id => !currentIds.has(id));
+        if (deletedIds.length > 0) {
+            console.log('Удаленные идентификаторы:', deletedIds);
+            // Здесь вы можете добавить логику для удаления изображений с сайта
+        }
+
+        writeMessageIds(Array.from(currentIds)); // Сохраняем обновленный список идентификаторов
+        console.log('Извлеченные изображения:', images); 
         return images;
-    } catch (error) {
-        console.error('Error fetching images:', error.message);
+    } catch (error
+    ) {
+        console.error('Ошибка при извлечении изображений:', error.message);
         throw error;
     }
 }
@@ -85,11 +93,11 @@ app.get('/getImages', async (req, res) => {
         const images = await getImages();
         res.json(images);
     } catch (error) {
-        console.error('Error in /getImages route:', error.message); 
-        res.status(500).send('Error fetching images');
+        console.error('Ошибка в маршруте /getImages:', error.message); 
+        res.status(500).send('Ошибка при извлечении изображений');
     }
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Сервер работает на http://localhost:${PORT}`);
 });
