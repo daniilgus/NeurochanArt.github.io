@@ -3,51 +3,27 @@ async function loadArts() {
   artContainer.innerHTML = '';
 
   try {
-    const response = await fetch('/getImages', {
-      method: 'GET',
-      headers: {
-        'Cache-Control': 'no-cache' // Отключаем кэширование
-      }
-    });
+    const response = await fetch('/getImages', { method: 'GET', headers: { 'Cache-Control': 'no-cache' } });
     const images = await response.json();
 
     if (images.length === 0) {
-      console.log('No images found.'); // Логируем, если изображений нет
-      return; // Если изображений нет, ничего не добавляем
+      console.log('No images found.');
+      return;
     }
 
-    images.forEach(async (image) => {
+    images.forEach(image => {
       const artItem = document.createElement('div');
       artItem.className = 'art-item';
-      artItem.setAttribute('data-text', `Автор: ${image.author}`);
 
       const img = document.createElement('img');
       img.src = image.url;
-      img.alt = "User Art";
-      img.onclick = () => openModal(image.url, image.text);
+      img.alt = "User  Art";
 
-      // Добавьте кнопку удаления к элементу art
-      const deleteButton = document.createElement('button');
-      deleteButton.innerHTML = 'Удалить';
-      deleteButton.addEventListener('click', async () => {
-        try {
-          const response = await fetch(`/deleteImage/${image.imagePath}`, {
-            method: 'DELETE',
-          });
-
-          if (response.ok) {
-            artItem.remove(); // Удалите элемент art из DOM
-            console.log('Изображение успешно удалено');
-          } else {
-            console.error('Ошибка при удалении изображения:', await response.text());
-          }
-        } catch (error) {
-          console.error('Ошибка при удалении изображения:', error.message);
-        }
-      });
+      const textElement = document.createElement('p');
+      textElement.innerText = image.text;
 
       artItem.appendChild(img);
-      artItem.appendChild(deleteButton);
+      artItem.appendChild(textElement);
       artContainer.appendChild(artItem);
     });
   } catch (error) {
@@ -55,21 +31,4 @@ async function loadArts() {
   }
 }
 
-function openModal(imageUrl, text) {
-  document.getElementById('modalImage').src = imageUrl;
-  document.getElementById('modalText').innerHTML = text;
-  document.getElementById('modal').style.display = 'block';
-}
-
-function closeModal() {
-  document.getElementById('modal').style.display = 'none';
-}
-
 window.onload = loadArts;
-
-window.onclick = function(event) {
-  const modal = document.getElementById('modal');
-  if (event.target === modal) {
-    closeModal();
-  }
-}
