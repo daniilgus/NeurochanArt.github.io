@@ -16,7 +16,9 @@ app.get('/', (req, res) => {
 });
 
 // Хранение изображений в памяти
+// Хранение изображений в памяти
 let currentImages = [];
+
 
 // Удаление существующего вебхука
 async function deleteWebhook() {
@@ -28,6 +30,8 @@ async function deleteWebhook() {
         console.log("Вебхук успешно удален!");
     }
 }
+
+
 
 // Получение информации о вебхуке
 async function getWebhookInfo() {
@@ -76,18 +80,24 @@ app.post('/webhook', express.json(), async (req, res) => {
         // Проверяем доступность изображения
         if (await checkImageAvailability(imageUrl)) {
             console.log(`Доступное изображение: ${imageUrl}`);
-            currentImages.push(imageUrl); // Сохраняем изображение в памяти
+            const text = update.channel_post.caption || ""; // Извлечение текста из caption
+            const authorMatch = text.match(/Автор:(.*)/);
+            const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; // Получаем автора
+
+            // Сохраняем изображение и информацию об авторе
+            currentImages.push({ url: imageUrl, text, author: authorText });
         } else {
             console.log(`Изображение недоступно: ${imageUrl}`);
         }
     } else if (update.channel_post && update.channel_post.delete_chat_photo) {
         console.log('Изображение удалено:', update.channel_post);
+        // Здесь вам нужно будет удалить изображение из currentImages
+        // Это может потребовать дополнительной логики для отслеживания удаленных изображений
     }
 
     res.sendStatus(200); // Отправляем статус 200
 });
 
-// Получение изображений
 app.get('/getImages', (req, res) => {
     console.log('Возвращаемые изображения:', currentImages);
     res.json(currentImages); // Возвращаем текущие изображения
@@ -115,3 +125,4 @@ async function checkImageAvailability(url) {
         return false;
     }
 }
+
