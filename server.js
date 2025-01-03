@@ -5,7 +5,7 @@ import cors from 'cors';
 import { getImages } from './bot.js'; // Импортируем функцию getImages из bot.js
 import fetch from 'node-fetch';
 
-dotenv.config(); 
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 app.get('/getImages', async (req, res) => {
     try {
         const images = await getImages();
-        console.log('Возвращаемые изображения:', images); // Логируем возвращаемые изображения
+        console.log('Возвращаемые изображения:', images);
         res.json(images);
     } catch (error) {
         console.error('Error in /getImages route:', error.message); 
@@ -42,14 +42,20 @@ async function setWebhook() {
 // Обработка входящих обновлений от Telegram
 app.post('/webhook', express.json(), async (req, res) => {
     const update = req.body;
-    console.log('Получено обновление:', update); // Логируем полученные обновления
-    // Здесь вы можете вызвать функцию для обработки обновления
-    await getImages(); // Или вызовите другую функцию для обработки
+    console.log('Получено обновление:', update);
+    
+    if (update.channel_post && update.channel_post.photo) {
+        await getImages(); // Обновляем изображения при новом посте
+    } else if (update.channel_post && update.channel_post.delete_chat_photo) {
+        // Логика для удаления изображения из вашего списка, если это необходимо
+        console.log('Изображение удалено:', update.channel_post);
+    }
+
     res.sendStatus(200); // Отправляем статус 200
 });
 
 // Запуск сервера
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Сервер запущен на порту ${PORT}`);
     setWebhook(); // Устанавливаем вебхук при запуске сервера
 });
