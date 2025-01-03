@@ -3,7 +3,8 @@ async function loadArts() {
     artContainer.innerHTML = ''; // Очищаем контейнер перед загрузкой новых изображений
 
     try {
-        const response = await fetch('/getImages'); 
+        // Добавляем временную метку к запросу, чтобы избежать кеширования
+        const response = await fetch(`/getImages?_=${new Date().getTime()}`); 
         const images = await response.json();
 
         if (images.length === 0) {
@@ -15,7 +16,7 @@ async function loadArts() {
         images.forEach(image => {
             const artItem = document.createElement('div');
             artItem.className = 'art-item';
-            artItem.setAttribute('data-text', `Автор: ${image.author}`); // Исправлено на интерполяцию для отображения автора
+            artItem.setAttribute('data-text', `Автор: ${image.author}`);
 
             const img = document.createElement('img');
             img.src = image.url;
