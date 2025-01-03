@@ -15,18 +15,18 @@ async function loadArts() {
         images.forEach(image => {
             const artItem = document.createElement('div');
             artItem.className = 'art-item';
-            artItem.setAttribute('data-text', `Автор: ${image.author}`);
+            artItem.setAttribute('data-text', `Автор: ${image.author}`); // Интерполяция для отображения автора
 
             const img = document.createElement('img');
             img.src = image.url;
-            img.alt = "User  Art";
-            img.onclick = () => openModal(image.url, image.text); 
+            img.alt = "User  Art"; // Альтернативный текст для изображения
+            img.onclick = () => openModal(image.url, image.text); // Открытие модального окна при клике
 
             artItem.appendChild(img);
             artContainer.appendChild(artItem);
         });
     } catch (error) {
-        console.error('Error loading arts:', error);
+        console.error('Ошибка загрузки изображений:', error);
         artContainer.innerHTML = '<p>Ошибка загрузки изображений. Попробуйте позже.</p>'; // Сообщение об ошибке
     }
 }
@@ -34,18 +34,18 @@ async function loadArts() {
 window.onload = loadArts; // Загружаем изображения при загрузке страницы
 
 function openModal(imageUrl, text) {
-    document.getElementById('modalImage').src = imageUrl;
-    document.getElementById('modalText').innerHTML = text; 
-    document.getElementById('modal').style.display = 'block';
+    document.getElementById('modalImage').src = imageUrl; // Устанавливаем изображение в модальном окне
+    document.getElementById('modalText').innerHTML = text; // Устанавливаем текст в модальном окне
+    document.getElementById('modal').style.display = 'block'; // Показываем модальное окно
 }
 
 function closeModal() {
-    document.getElementById('modal').style.display = 'none';
+    document.getElementById('modal').style.display = 'none'; // Скрываем модальное окно
 }
 
 window.onclick = function(event) {
     const modal = document.getElementById('modal');
     if (event.target === modal) {
-        closeModal();
+        closeModal(); // Закрываем модальное окно при клике вне его
     }
 }
