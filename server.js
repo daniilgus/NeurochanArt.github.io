@@ -63,23 +63,30 @@ async function getImages() {
                 const filePath = fileData.result.file_path;
                 const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
 
-                const text = update.channel_post.text || update.channel_post.caption || "";
+                const text = update.channel_post.text || update
+                .channel_post.caption || "";
                 const authorMatch = text.match(/Автор:(.*)/);
                 const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
 
                 // Добавляем идентификатор в новый набор
                 newIds.add(messageId);
                 // Если идентификатор новый, добавляем изображение в массив
-                if
-                (!currentIds.has(messageId)) {
+                if (!currentIds.has(messageId)) {
                     images.push({ url: imageUrl, text: text, author: authorText });
                 }
             }
         }
 
-        // Удаляем идентификаторы, которые больше не существуют
-        const updatedIds = existingIds.filter(id => newIds.has(id));
-        writeMessageIds(updatedIds); // Сохраняем обновленный список идентификаторов
+        // Если нет новых идентификаторов, очищаем messages.json
+        if (newIds.size === 0) {
+            writeMessageIds([]); // Очищаем файл
+            console.log('Channel is empty. Cleared messages.json.');
+        } else {
+            // Удаляем идентификаторы, которые больше не существуют
+            const updatedIds = existingIds.filter(id => newIds.has(id));
+            writeMessageIds(updatedIds); // Сохраняем обновленный список идентификаторов
+        }
+
         console.log('Extracted images:', images); 
         return images;
     } catch (error) {
