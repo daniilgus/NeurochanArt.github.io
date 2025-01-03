@@ -1,7 +1,7 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 
-const TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'; // Замените на ваш токен
+const TOKEN = '8195705425:AAGEBMFz4SDca5NLicRIwhr8JyqsIRTbp7I'; // Замените на ваш токен
 const CHAT_ID = '-1002287069041'; 
 
 // Функция для чтения идентификаторов сообщений из файла
