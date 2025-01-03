@@ -6,7 +6,6 @@ import { getImages } from './bot.js'; // Импортируем функцию g
 import fetch from 'node-fetch';
 
 dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -30,7 +29,8 @@ app.get('/getImages', async (req, res) => {
 
 // Установка вебхука
 async function setWebhook() {
-    const url = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=https://${process.env.HOST}/webhook`;
+    const url = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=${process.env.HOST}/webhook`;
+    console.log("Устанавливаем вебхук на URL:", url); // Логируем URL для проверки
     const response = await fetch(url);
     if (!response.ok) {
         console.error(`Ошибка установки вебхука: ${response.status}`);
@@ -43,11 +43,10 @@ async function setWebhook() {
 app.post('/webhook', express.json(), async (req, res) => {
     const update = req.body;
     console.log('Получено обновление:', update);
-    
+
     if (update.channel_post && update.channel_post.photo) {
         await getImages(); // Обновляем изображения при новом посте
     } else if (update.channel_post && update.channel_post.delete_chat_photo) {
-        // Логика для удаления изображения из вашего списка, если это необходимо
         console.log('Изображение удалено:', update.channel_post);
     }
 
