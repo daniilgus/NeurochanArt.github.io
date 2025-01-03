@@ -59,8 +59,7 @@ async function getImages() {
                     console.error(`HTTP error! status: ${fileResponse.status}`);
                     throw new Error(`HTTP error! status: ${fileResponse.status}`);
                 }
-                const fileData = await fileResponse
-                .json();
+                const fileData = await fileResponse.json();
                 const filePath = fileData.result.file_path;
                 const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
 
@@ -77,14 +76,9 @@ async function getImages() {
             }
         }
 
-        // Если не было новых идентификаторов, очищаем messages.json
-        if (newIds.size === 0) {
-            writeMessageIds([]); // Очищаем файл
-            console.log('Channel is empty. Cleared messages.json.');
-        } else {
-            // Сохраняем только актуальные идентификаторы
-            writeMessageIds(Array.from(newIds)); // Сохраняем только новые идентификаторы
-        }
+        // Обновляем messages.json только с актуальными идентификаторами
+        const updatedIds = existingIds.filter(id => newIds.has(id)); // Сохраняем только актуальные идентификаторы
+        writeMessageIds(updatedIds); // Записываем обновленный список идентификаторов
 
         console.log('Extracted images:', images); 
         return images;
