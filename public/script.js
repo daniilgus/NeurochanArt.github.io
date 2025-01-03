@@ -32,5 +32,21 @@ async function loadArts() {
     }
 }
 
-// Вызов функции загрузки изображений при загрузке страницы
-document.addEventListener('DOMContentLoaded', loadArts);
+window.onload = loadArts; // Загружаем изображения при загрузке страницы
+
+function openModal(imageUrl, text) {
+    document.getElementById('modalImage').src = imageUrl; // Устанавливаем изображение в модальном окне
+    document.getElementById('modalText').innerHTML = text; // Устанавливаем текст в модальном окне
+    document.getElementById('modal').style.display = 'block'; // Показываем модальное окно
+}
+
+function closeModal() {
+    document.getElementById('modal').style.display = 'none'; // Скрываем модальное окно
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target === modal) {
+        closeModal(); // Закрываем модальное окно при клике вне его
+    }
+}
