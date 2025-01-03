@@ -7,7 +7,7 @@ import fs from 'fs';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -94,7 +94,7 @@ app.get('/getImages', async (req, res) => {
     res.json(images);
   } catch (error) {
     console.error('Ошибка в маршруте /getImages:', error.message);
-    res.status(500).send('Ошибка при получении изображений');
+    res.status(500).json({ error: 'Ошибка при получении изображений' });
   }
 });
 
