@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeurochanArt</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1 onclick="location.reload()">
+            NeurochanArt
+        </h1>
+    </header>
+
+    <div class="user_container">
+        <div id="artContainer">
+            <!--Тута будуть арты-->
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; NeurochanArt. Все права защищены "Возможно" 🤫. 
+            <br>
+            <a href="https://t.me/neurochan_ai" target="_blank">Все изображения взяты из "Neurochan AI"</a> | 
+            <a href="https://t.me/+a5QkSToPul83NTli" target="_blank">Наш чат</a>
+        </p>
+    </footer>
+
+    <!-- Модальное окно -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <img id="modalImage" src="" alt="Art Image">
+            <p id="modalText"></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
