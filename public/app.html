@@ -13,11 +13,25 @@
 </header>
 <div class="user_container">
     <div>
-        <button onclick="sortByDate()">Сортировать по новизне</button>
-        <button onclick="sortByLikes()">Сортировать по лайкам</button>
+        <button class="sort-button" onclick="sortByDate()">Сортировать по новизне</button>
+        <button class="sort-button" onclick="sortByLikes()">Сортировать по лайкам</button>
     </div>
     <div id="artContainer">
-        <!-- Тут будут арты -->
+        <div class="art-item" data-text="Описание арта 1">
+            <img src="path/to/image1.jpg" alt="Art Image 1">
+            <div class="like-container">
+                <button onclick="likeArt(this)">❤️</button>
+                <span class="likeCount">0</span>
+            </div>
+        </div>
+        <div class="art-item" data-text="Описание арта 2">
+            <img src="path/to/image2.jpg" alt="Art Image 2">
+            <div class="like-container">
+                <button onclick="likeArt(this)">❤️</button>
+                <span class="likeCount">0</span>
+            </div>
+        </div>
+        <!-- Добавьте больше артов по аналогии -->
     </div>
 </div>
 
