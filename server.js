@@ -59,7 +59,7 @@ async function setWebhook() {
         console.log("Вебхук успешно установлен!");
     }
 }
-// Обработка входящих обновлений от Telegram
+
 // Обработка входящих обновлений от Telegram
 app.post('/webhook', express.json(), async (req, res) => {
     const update = req.body;
@@ -97,6 +97,7 @@ app.post('/webhook', express.json(), async (req, res) => {
 
     res.sendStatus(200); // Отправляем статус 200
 });
+
 
 // Получение изображений
 app.get('/getImages', (req, res) => {
