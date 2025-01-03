@@ -73,14 +73,30 @@ app.post('/webhook', express.json(), async (req, res) => {
     const update = req.body;
     console.log('Получено обновление:', update);
 
+    // Проверяем, есть ли фото в сообщении
     if (update.channel_post && update.channel_post.photo) {
-        await getImages(); // Обновляем изображения при новом посте
+        const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
+        const fileId = photo.file_id;
+
+        // Получаем путь к файлу
+        const filePath = await getFilePath(fileId);
+        const imageUrl = `https://api.telegram.org/file/bot${process.env.TOKEN}/${filePath}`;
+
+        // Проверяем доступность изображения
+        if (await checkImageAvailability(imageUrl)) {
+            console.log(`Доступное изображение: ${imageUrl}`);
+            // Здесь вы можете сохранить изображение или выполнить другую логику
+        } else {
+            console.log(`Изображение недоступно: ${imageUrl}`);
+        }
     } else if (update.channel_post && update.channel_post.delete_chat_photo) {
         console.log('Изображение удалено:', update.channel_post);
     }
 
     res.sendStatus(200); // Отправляем статус 200
 });
+
+
 
 // Запуск сервера
 app.listen(PORT, () => {
