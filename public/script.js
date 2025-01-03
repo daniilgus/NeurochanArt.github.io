@@ -7,7 +7,7 @@ async function loadArts() {
         const images = await response.json();
 
         if (images.length === 0) {
-            console.log('Нет доступных изображений.'); // Логируем информацию
+            console.log('Нет доступных изображений.');
             artContainer.innerHTML = '<p>Нет доступных изображений.</p>'; // Сообщение, если изображений нет
             return;
         }
@@ -15,12 +15,12 @@ async function loadArts() {
         images.forEach(image => {
             const artItem = document.createElement('div');
             artItem.className = 'art-item';
-            artItem.setAttribute('data-text', `Автор: ${image.author}`); // Изменяем текст для отображения при наведении
+            artItem.setAttribute('data-text', `Автор: ${image.author}`);
 
             const img = document.createElement('img');
             img.src = image.url;
             img.alt = "User  Art";
-            img.onclick = () => openModal(image.url, image.text); // Передаем полный текст в модальное окно
+            img.onclick = () => openModal(image.url, image.text); 
 
             artItem.appendChild(img);
             artContainer.appendChild(artItem);
@@ -35,7 +35,7 @@ window.onload = loadArts; // Загружаем изображения при з
 
 function openModal(imageUrl, text) {
     document.getElementById('modalImage').src = imageUrl;
-    document.getElementById('modalText').innerHTML = text; // Используем innerHTML для сохранения форматирования
+    document.getElementById('modalText').innerHTML = text; 
     document.getElementById('modal').style.display = 'block';
 }
 
