@@ -27,10 +27,22 @@ app.get('/getImages', async (req, res) => {
     }
 });
 
+// Удаление существующего вебхука
+async function deleteWebhook() {
+    const url = `https://api.telegram.org/bot${process.env.TOKEN}/deleteWebhook`;
+    const response = await fetch(url);
+    if (!response.ok) {
+        console.error(`Ошибка удаления вебхука: ${response.status}`);
+    } else {
+        console.log("Вебхук успешно удален!");
+    }
+}
+
 // Установка вебхука
 async function setWebhook() {
+    await deleteWebhook(); // Удаляем существующий вебхук
     const url = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=${process.env.HOST}/webhook`;
-    console.log("Устанавливаем вебхук на URL:", url); // Логируем URL для проверки
+    console.log("Устанавливаем вебхук на URL:", url); // Логируем URL
     const response = await fetch(url);
     if (!response.ok) {
         console.error(`Ошибка установки вебхука: ${response.status}`);
@@ -38,7 +50,6 @@ async function setWebhook() {
         console.log("Вебхук успешно установлен!");
     }
 }
-
 // Обработка входящих обновлений от Telegram
 app.post('/webhook', express.json(), async (req, res) => {
     const update = req.body;
