@@ -38,8 +38,25 @@ async function deleteWebhook() {
     }
 }
 
+// Получение информации о вебхуке
+async function getWebhookInfo() {
+    const url = `https://api.telegram.org/bot${process.env.TOKEN}/getWebhookInfo`;
+    const response = await fetch(url);
+    if (!response.ok) {
+        console.error(`Ошибка получения информации о вебхуке: ${response.status}`);
+        return null;
+    }
+    const data = await response.json();
+    return data.result;
+}
 // Установка вебхука
 async function setWebhook() {
+    const webhookInfo = await getWebhookInfo();
+    if (webhookInfo && webhookInfo.url === `${process.env.HOST}/webhook`) {
+        console.log("Вебхук уже установлен, повторная установка не требуется.");
+        return; // Если вебхук уже установлен, выходим из функции
+    }
+
     await deleteWebhook(); // Удаляем существующий вебхук
     const url = `https://api.telegram.org/bot${process.env.TOKEN}/setWebhook?url=${process.env.HOST}/webhook`;
     console.log("Устанавливаем вебхук на URL:", url); // Логируем URL
@@ -50,6 +67,7 @@ async function setWebhook() {
         console.log("Вебхук успешно установлен!");
     }
 }
+
 // Обработка входящих обновлений от Telegram
 app.post('/webhook', express.json(), async (req, res) => {
     const update = req.body;
