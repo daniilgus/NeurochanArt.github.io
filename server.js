@@ -59,12 +59,12 @@ async function getImages() {
                     console.error(`HTTP error! status: ${fileResponse.status}`);
                     throw new Error(`HTTP error! status: ${fileResponse.status}`);
                 }
-                const fileData = await fileResponse.json();
+                const fileData = await fileResponse
+                .json();
                 const filePath = fileData.result.file_path;
                 const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
 
-                const text = update.channel_post.text ||
-                update.channel_post.caption || "";
+                const text = update.channel_post.text || update.channel_post.caption || "";
                 const authorMatch = text.match(/Автор:(.*)/);
                 const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
 
@@ -77,14 +77,13 @@ async function getImages() {
             }
         }
 
-        // Если нет новых идентификаторов, очищаем messages.json
+        // Если не было новых идентификаторов, очищаем messages.json
         if (newIds.size === 0) {
             writeMessageIds([]); // Очищаем файл
             console.log('Channel is empty. Cleared messages.json.');
         } else {
-            // Удаляем идентификаторы, которые больше не существуют
-            const updatedIds = existingIds.filter(id => newIds.has(id));
-            writeMessageIds(updatedIds); // Сохраняем обновленный список идентификаторов
+            // Сохраняем только актуальные идентификаторы
+            writeMessageIds(Array.from(newIds)); // Сохраняем только новые идентификаторы
         }
 
         console.log('Extracted images:', images); 
