@@ -8,35 +8,36 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="header">
-        <h1 onclick="location.reload()">
-            NeurochanArt
-        </h1>
-    </header>
-
-    <div class="user_container">
-        <div id="artContainer">
-            <!--Тута будуть арты-->
-        </div>
+<header class="header">
+    <h1 onclick="location.reload()">NeurochanArt</h1>
+</header>
+<div class="user_container">
+    <div>
+        <button onclick="sortByDate()">Сортировать по новизне</button>
+        <button onclick="sortByLikes()">Сортировать по лайкам</button>
     </div>
-
-    <footer>
-        <p>&copy; NeurochanArt. Все права защищены "Возможно" 🤫. 
-            <br>
-            <a href="https://t.me/neurochan_ai" target="_blank">Все изображения взяты из "Neurochan AI"</a> | 
-            <a href="https://t.me/+a5QkSToPul83NTli" target="_blank">Наш чат</a>
-        </p>
-    </footer>
-
-    <!-- Модальное окно -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <img id="modalImage" src="" alt="Art Image">
-            <p id="modalText"></p>
-        </div>
+    <div id="artContainer">
+        <!-- Тут будут арты -->
     </div>
+</div>
 
-    <script src="script.js"></script>
+<footer>
+    <p>&copy; NeurochanArt. Все права защищены "Возможно" 🤫. 
+        <br>
+        <a href="https://t.me/neurochan_ai" target="_blank">Все изображения взяты из "Neurochan AI"</a> | 
+        <a href="https://t.me/+a5QkSToPul83NTli" target="_blank">Наш чат</a>
+    </p>
+</footer>
+
+<!-- Модальное окно -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img id="modalImage" src="" alt="Art Image">
+        <p id="modalText"></p>
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
