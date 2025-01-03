@@ -1,7 +1,7 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import path from 'path';
-import dotenv from 'dotenv'; 
+import dotenv from 'dotenv';
 import cors from 'cors';
 import fs from 'fs';
 
@@ -9,14 +9,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
-const CHAT_ID = process.env.TELEGRAM_CHAT_ID; 
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 app.use(cors());
-app.use(express.static('public')); 
+app.use(express.static('public'));
+app.use(express.json()); // Для обработки JSON-тел запросов
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
+    res.sendFile(path.join(process.cwd(), 'public', 'app.html'));
 });
 
 // Функция для чтения идентификаторов сообщений из файла
@@ -33,6 +34,8 @@ function writeMessageIds(ids) {
     fs.writeFileSync('messages.json', JSON.stringify(ids));
 }
 
+let images = []; // Массив для хранения изображений и лайков
+
 async function getImages() {
     try {
         const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
@@ -43,14 +46,15 @@ async function getImages() {
         const data = await response.json();
         console.log('Полученные данные от Telegram:', data);
 
-        const images = [];
         const existingIds = readMessageIds(); // Считываем существующие идентификаторы
         const currentIds = new Set(existingIds); // Используем Set для быстрого поиска
+
+        images = []; // Очищаем массив перед заполнением
 
         for (const update of data.result) {
             if (update.channel_post && update.channel_post.photo) {
                 const messageId = update.channel_post.message_id; // Получаем идентификатор сообщения
-                const photo = update.channel_post.photo[update.channel_post.photo.length - 1]; 
+                const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
                 const fileId = photo.file_id;
 
                 const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
@@ -78,11 +82,11 @@ async function getImages() {
             // Здесь вы можете добавить логику для удаления изображений с сайта
         }
 
-        writeMessageIds(Array.from(currentIds)); // Сохраняем обновленный список идентификаторов
-        console.log('Извлеченные изображения:', images); 
+        writeMessageIds
+        (Array.from(currentIds)); // Сохраняем обновленный список идентификаторов
+        console.log('Извлеченные изображения:', images);
         return images;
-    } catch (error
-    ) {
+    } catch (error) {
         console.error('Ошибка при извлечении изображений:', error.message);
         throw error;
     }
@@ -90,11 +94,23 @@ async function getImages() {
 
 app.get('/getImages', async (req, res) => {
     try {
-        const images = await getImages();
-        res.json(images);
+        const imagesList = await getImages(); // Получаем изображения
+        res.json(imagesList);
     } catch (error) {
-        console.error('Ошибка в маршруте /getImages:', error.message); 
+        console.error('Ошибка в маршруте /getImages:', error.message);
         res.status(500).send('Ошибка при извлечении изображений');
+    }
+});
+
+// Новый маршрут для обновления лайков
+app.post('/updateLikes', express.json(), (req, res) => {
+    const { url } = req.body; // Получаем URL изображения
+    const image = images.find(img => img.url === url);
+    if (image) {
+        image.likes = (image.likes || 0) + 1; // Увеличиваем количество лайков
+        res.status(200).send('Лайк добавлен');
+    } else {
+        res.status(404).send('Изображение не найдено');
     }
 });
 
