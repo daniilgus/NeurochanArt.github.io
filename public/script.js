@@ -15,7 +15,7 @@ async function loadArts() {
         images.forEach(image => {
             const artItem = document.createElement('div');
             artItem.className = 'art-item';
-            artItem.setAttribute('data-text', `Автор: ${image.author}`); // Интерполяция для отображения автора
+            artItem.setAttribute('data-text', `Автор: ${image.author}`); // Исправлено на интерполяцию для отображения автора
 
             const img = document.createElement('img');
             img.src = image.url;
