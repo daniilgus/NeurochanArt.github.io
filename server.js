@@ -14,10 +14,31 @@ const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 app.use(cors());
 app.use(express.static('public')); 
+app.use(express.json()); // Не забудьте добавить это, если еще не добавили
+
+app.post('/webhook', (req, res) => {
+  console.log('Received webhook data:', req.body);
+  res.sendStatus(200); // Отправьте код состояния 200, чтобы Telegram знал, что запрос был успешно обработан
+
+  // Обработайте событие delete_message, если оно присутствует в данных веб-хука
+  if (req.body.message && req.body.message.delete) {
+    handleMessageDeletion(req.body.message);
+  }
+});
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
 });
+
+function handleMessageDeletion(message) {
+  const messageId = message.message_id;
+
+  // Обновите свою базу данных или файл messages.json, удалив messageId
+  // Например, если вы используете файл messages.json:
+  const existingIds = readMessageIds();
+  const updatedIds = existingIds.filter(id => id !== messageId);
+  writeMessageIds(updatedIds);
+}
 
 // Функция для чтения идентификаторов сообщений из файла
 function readMessageIds() {
