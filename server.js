@@ -12,10 +12,10 @@ app.use(cors());
 app.use(express.static('public')); 
 
 app.use((req, res, next) => {
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
-    next();
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
 });
 
 app.get('/', (req, res) => {
@@ -67,54 +67,53 @@ async function setWebhook() {
 }
 
 // Обработка входящих обновлений от Telegram
-app.post('/webhook', express.json(), async (req, res) => {
-    const update = req.body;
-    console.log('Получено обновление:', update);
+app.post('/webhook', async (req, res) => {
+  const update = req.body;
+  console.log('Получено обновление:', update);
 
-    // Проверяем, есть ли фото в сообщении
-    if (update.channel_post && update.channel_post.photo) {
-        const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
-        const fileId = photo.file_id;
+  // Проверяем, есть ли фото в сообщении
+  if (update.channel_post && update.channel_post.photo) {
+    const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
+    const fileId = photo.file_id;
 
-        // Получаем путь к файлу
-        const filePath = await getFilePath(fileId);
-        const imageUrl = `https://api.telegram.org/file/bot${process.env.TOKEN}/${filePath}`;
+    // Получаем путь к файлу
+    const filePath = await getFilePath(fileId);
+    const imageUrl = `https://api.telegram.org/file/bot${process.env.TOKEN}/${filePath}`;
 
-        // Проверяем доступность изображения
-        if (await checkImageAvailability(imageUrl)) {
-            console.log(`Доступное изображение: ${imageUrl}`);
-            const text = update.channel_post.caption || ""; // Извлечение текста из caption
-            const authorMatch = text.match(/Автор:(.*)/);
-            const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; // Получаем автора
+    // Проверяем доступность изображения
+    if (await checkImageAvailability(imageUrl)) {
+      console.log(`Доступное изображение: ${imageUrl}`);
+      const text = update.channel_post.caption || ""; // Извлечение текста из caption
+      const authorMatch = text.match(/Автор:(.*)/);
+      const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; // Получаем автора
 
-            // Сохраняем изображение и информацию об авторе
-            currentImages.push({ url: imageUrl, text, author: authorText, fileId: fileId });
-        } else {
-            console.log(`Изображение недоступно: ${imageUrl}`);
-        }
-    } else if (update.channel_post && update.channel_post.delete_chat_photo) {
-        console.log('Изображение удалено:', update.channel_post);
-
-        // Удаляем изображение из currentImages
-        const deletedPhotoId = update.channel_post.photo[0].file_id; // Получаем file_id удаленного фото
-        currentImages = currentImages.filter(image => image.fileId !== deletedPhotoId); // Удаляем изображение по fileId
-        console.log(`Изображение с ID ${deletedPhotoId} удалено из массива.`);
+      // Сохраняем изображение и информацию об авторе
+      currentImages.push({ url: imageUrl, text, author: authorText, fileId: fileId });
+    } else {
+      console.log(`Изображение недоступно: ${imageUrl}`);
     }
+  } else if (update.channel_post && update.channel_post.delete_chat_photo) {
+    console.log('Изображение удалено:', update.channel_post);
 
-    res.sendStatus(200); // Отправляем статус 200
+    // Удаляем изображение из currentImages
+    const deletedPhotoId = update.channel_post.photo[0].file_id; // Получаем file_id удаленного фото
+    currentImages = currentImages.filter(image => image.fileId !== deletedPhotoId); // Удаляем изображение по fileId
+    console.log(`Изображение с ID ${deletedPhotoId} удалено из массива.`);
+  }
+
+  res.sendStatus(200); // Отправляем статус 200
 });
-
 
 // Получение изображений
 app.get('/getImages', (req, res) => {
-    console.log('Возвращаемые изображения:', currentImages);
-    res.json(currentImages); // Возвращаем текущие изображения
+  console.log('Возвращаемые изображения:', currentImages);
+  res.json(currentImages); // Возвращаем текущие изображения
 });
 
 // Запуск сервера
 app.listen(PORT, () => {
-    console.log(`Сервер запущен на порту ${PORT}`);
-    setWebhook(); // Устанавливаем вебхук при запуске сервера
+  console.log(`Сервер запущен на порту ${PORT}`);
+  setWebhook(); // Устанавливаем вебхук при запуске сервера
 });
 
 // Функции для работы с файлами
