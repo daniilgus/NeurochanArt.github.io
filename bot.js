@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-const TOKEN = '8195705425:AAGEBMFz4SDca5NLicRIwhr8JyqsIRTbp7I';
+const TOKEN = process.env.TOKEN;
 const CHAT_ID = '-1002287069041';
 
 let currentImages = new Set(); // Хранит текущие доступные изображения
