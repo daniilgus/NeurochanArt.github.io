@@ -63,8 +63,8 @@ async function getImages() {
                 const filePath = fileData.result.file_path;
                 const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
 
-                const text = update.channel_post.text || update
-                .channel_post.caption || "";
+                const text = update.channel_post.text ||
+                update.channel_post.caption || "";
                 const authorMatch = text.match(/Автор:(.*)/);
                 const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
 
