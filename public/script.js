@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
   loadArts();
 });
 
+window.onload = loadArts;
+
 function openModal(imageUrl, text) {
     document.getElementById('modalImage').src = imageUrl; // Устанавливаем изображение в модальном окне
     document.getElementById('modalText').innerHTML = text; // Устанавливаем текст в модальном окне
