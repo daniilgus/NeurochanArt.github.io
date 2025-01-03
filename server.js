@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv'; 
 import cors from 'cors';
-import { getImages } from './bot.js'; // Импортируем функцию getImages из bot.js
 import fetch from 'node-fetch';
 
 dotenv.config();
@@ -16,16 +15,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public', 'app.html')); 
 });
 
-app.get('/getImages', async (req, res) => {
-    try {
-        const images = await getImages();
-        console.log('Возвращаемые изображения:', images);
-        res.json(images);
-    } catch (error) {
-        console.error('Error in /getImages route:', error.message); 
-        res.status(500).send('Error fetching images');
-    }
-});
+// Хранение изображений в памяти
+let currentImages = [];
 
 // Удаление существующего вебхука
 async function deleteWebhook() {
@@ -49,6 +40,7 @@ async function getWebhookInfo() {
     const data = await response.json();
     return data.result;
 }
+
 // Установка вебхука
 async function setWebhook() {
     const webhookInfo = await getWebhookInfo();
@@ -67,7 +59,6 @@ async function setWebhook() {
         console.log("Вебхук успешно установлен!");
     }
 }
-
 // Обработка входящих обновлений от Telegram
 app.post('/webhook', express.json(), async (req, res) => {
     const update = req.body;
@@ -85,7 +76,7 @@ app.post('/webhook', express.json(), async (req, res) => {
         // Проверяем доступность изображения
         if (await checkImageAvailability(imageUrl)) {
             console.log(`Доступное изображение: ${imageUrl}`);
-            // Здесь вы можете сохранить изображение или выполнить другую логику
+            currentImages.push(imageUrl); // Сохраняем изображение в памяти
         } else {
             console.log(`Изображение недоступно: ${imageUrl}`);
         }
@@ -96,10 +87,31 @@ app.post('/webhook', express.json(), async (req, res) => {
     res.sendStatus(200); // Отправляем статус 200
 });
 
-
+// Получение изображений
+app.get('/getImages', (req, res) => {
+    console.log('Возвращаемые изображения:', currentImages);
+    res.json(currentImages); // Возвращаем текущие изображения
+});
 
 // Запуск сервера
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
     setWebhook(); // Устанавливаем вебхук при запуске сервера
 });
+
+// Функции для работы с файлами
+async function getFilePath(fileId) {
+    const response = await fetch(`https://api.telegram.org/bot${process.env.TOKEN}/getFile?file_id=${fileId}`);
+    const data = await response.json();
+    return data.result.file_path;
+}
+
+async function checkImageAvailability(url) {
+    try {
+        const response = await fetch(url, { method: 'HEAD' });
+        return response.ok;
+    } catch (error) {
+        console.error(`Ошибка при проверке доступности изображения ${url}:`, error);
+        return false;
+    }
+}
