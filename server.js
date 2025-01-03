@@ -60,7 +60,6 @@ async function setWebhook() {
     }
 }
 // Обработка входящих обновлений от Telegram
-// Обработка входящих обновлений от Telegram
 app.post('/webhook', express.json(), async (req, res) => {
     const update = req.body;
     console.log('Получено обновление:', update);
