@@ -4,10 +4,11 @@ import path from 'path';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import fs from 'fs';
+
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
@@ -36,66 +37,50 @@ function writeMessageIds(ids) {
 async function getImages() {
   try {
     const response = await fetch(`https://api.telegram.org/bot${TOKEN}/getUpdates`);
-    if (!response.ok) {
-      console.error(`HTTP error! status: ${response.status}`);
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
     const data = await response.json();
-
-    if (!data.result || data.result.length === 0) {
-      console.log('No new updates found.');
-      return [];
-    }
-
     const images = [];
-    const existingIds = readMessageIds(); // Считываем существующие идентификаторы
-    const currentIds = new Set(existingIds); // Используем Set для быстрого поиска
+    const existingIds = readMessageIds();
+    const currentIds = new Set(existingIds);
 
     for (const update of data.result) {
       if (update.channel_post && update.channel_post.photo) {
-        // Ваш существующий код для обработки изображений
+        const messageId = update.channel_post.message_id;
+        const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
+        const fileId = photo.file_id;
+
+        const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
+        const fileData = await fileResponse.json();
+        const filePath = fileData.result.file_path;
+        const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
+        const text = update.channel_post.text || update.channel_post.caption || "";
+
+        if (!currentIds.has(messageId)) {
+          images.push({ url: imageUrl, text });
+          currentIds.add(messageId);
+        }
       }
     }
 
-    // Обновляем список идентификаторов
-    writeMessageIds(Array.from(currentIds)); // Сохраняем обновленный список идентификаторов
+    writeMessageIds(Array.from(currentIds));
     return images;
   } catch (error) {
     console.error('Ошибка при получении изображений:', error.message);
-    throw error; // Пробрасываем ошибку дальше
+    throw error;
   }
 }
-
-
 app.get('/getImages', async (req, res) => {
-  try {
-    const images = await getImages();
-    res.json(images);
-  } catch (error) {
-    console.error('Ошибка в маршруте /getImages:', error.message);
-    res.status(500).json({ error: 'Ошибка при получении изображений' });
-  }
-});
-
-app.delete('/deleteImage/:imagePath', async (req, res) => {
-  try {
-    const { imagePath } = req.params;
-    const imageFilePath = `public/images/${imagePath}`;
-
-    // Проверьте, существует ли файл изображения
-    if (fs.existsSync(imageFilePath)) {
-      // Удалите файл изображения
-      fs.unlinkSync(imageFilePath);
-      res.status(200).send('Изображение успешно удалено');
-    } else {
-      res.status(404).send('Изображение не найдено');
+    try {
+      const images = await getImages();
+      res.json(images);
+    } catch (error) {
+      console.error('Ошибка в маршруте /getImages:', error.message);
+      res.status(500).json({ error: 'Ошибка при получении изображений' });
     }
-  } catch (error) {
-    console.error('Ошибка при удалении изображения:', error.message);
-    res.status(500).send('Ошибка при удалении изображения');
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на http://localhost:${PORT}`);
-});
+  });
+  
+  app.listen(PORT, () => {
+    console.log(`Сервер запущен на http://localhost:${PORT}`);
+  });
+  
