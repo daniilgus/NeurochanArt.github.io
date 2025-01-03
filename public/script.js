@@ -15,12 +15,11 @@ async function loadArts() {
             img.src = image.url;
             img.alt = "User  Art";
             img.onclick = () => openModal(image.url, image.text);
-
             artItem.appendChild(img);
             artContainer.appendChild(artItem);
         });
     } catch (error) {
-        console.error('Error loading arts:', error);
+        console.error('Ошибка при загрузке изображений:', error);
     }
 }
 
