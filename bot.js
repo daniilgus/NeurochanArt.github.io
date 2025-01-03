@@ -54,22 +54,22 @@ export async function getImages() {
 
                 // Проверяем доступность изображения
                 if (await checkImageAvailability(imageUrl)) {
-                    images.push({ url: imageUrl, text: text, author: authorText });
+                    images.push({ url: imageUrl, text, author: authorText });
                     currentImages.add(imageUrl); // Добавляем доступное изображение в текущий список
                 } else {
                     console.log(`Изображение недоступно: ${imageUrl}`);
+                    }
                 }
             }
         }
+    
+        // Удаляем недоступные изображения из currentImages
+        currentImages.forEach(url => {
+            if (!uniqueUrls.has(url)) {
+                currentImages.delete(url);
+            }
+        });
+    
+        console.log('Доступные изображения:', images);
+        return images; 
     }
-
-    // Удаляем недоступные изображения из currentImages
-    currentImages.forEach(url => {
-        if (!uniqueUrls.has(url)) {
-            currentImages.delete(url);
-        }
-    });
-
-    console.log('Доступные изображения:', images);
-    return images; 
-}
