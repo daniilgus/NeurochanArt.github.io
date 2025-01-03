@@ -60,6 +60,7 @@ async function setWebhook() {
     }
 }
 // Обработка входящих обновлений от Telegram
+// Обработка входящих обновлений от Telegram
 app.post('/webhook', express.json(), async (req, res) => {
     const update = req.body;
     console.log('Получено обновление:', update);
@@ -87,8 +88,10 @@ app.post('/webhook', express.json(), async (req, res) => {
         }
     } else if (update.channel_post && update.channel_post.delete_chat_photo) {
         console.log('Изображение удалено:', update.channel_post);
-        // Здесь вам нужно будет удалить изображение из currentImages
-        // Это может потребовать дополнительной логики для отслеживания удаленных изображений
+
+        // Удаляем изображение из currentImages
+        const deletedPhotoId = update.channel_post.photo[0].file_id; // Получаем file_id удаленного фото
+        currentImages = currentImages.filter(image => image.fileId !== deletedPhotoId); // Удаляем изображение по fileId
     }
 
     res.sendStatus(200); // Отправляем статус 200
