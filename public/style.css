@@ -31,7 +31,6 @@ body {
     align-items: center;
     justify-content: center;
     display: flex;
-    box-shadow: 0 8px 10px rgba(0, 0, 255, 0.5);
 }
 
 .header h1 {
@@ -96,7 +95,6 @@ footer {
     padding: 20px;
     text-align: center;
     margin-top: auto;
-    box-shadow: 0 -8px 10px rgba(0, 0, 255, 0.5);
 }
 
 footer a {
