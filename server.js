@@ -108,6 +108,22 @@ app.delete('/clearMessages', (req, res) => {
     }
 });
 
+app.get('/setWebhook', (req, res) => {
+  fetch(`https://api.telegram.org/bot${TOKEN}/setWebhook?url=${process.env.TELEGRAM_WEBHOOK_URL}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.ok) {
+        res.status(200).send('Веб-хук установлен успешно');
+      } else {
+        res.status(500).send('Ошибка при установке веб-хука');
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка при установке веб-хука:', error);
+      res.status(500).send('Ошибка при установке веб-хука');
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
