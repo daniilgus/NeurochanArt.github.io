@@ -60,20 +60,20 @@ body {
     transform: scale(1.015);
 }
 
-.info-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 5px;
-    position: relative;
-}
-
-.art-description {
-    transition: filter 0.3s;
-}
-
-.art-item:hover .art-description {
-    filter: blur(2px);
+.art-item:hover::after {
+    content: attr(data-text);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .user_container {
@@ -155,6 +155,7 @@ footer {
 .like-container {
     display: flex;
     align-items: center;
+    position: relative;
 }
 
 .like-container button {
@@ -168,6 +169,11 @@ footer {
 .like-container span {
     color: white;
     margin-left: 5px;
+}
+
+.art-item:hover .like-container span {
+    filter: blur(2px);
+    transition: filter 0.3s;
 }
 
 @media (min-width: 768px) {
