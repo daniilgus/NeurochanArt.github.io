@@ -122,31 +122,3 @@ async function checkImageAvailability(url) {
         return false;
     }
 }
-// Получение изображений
-app.get('/getImages', (req, res) => {
-    console.log('Возвращаемые изображения:', currentImages);
-    res.json(currentImages); // Возвращаем текущие изображения
-});
-
-// Запуск сервера
-app.listen(PORT, () => {
-    console.log(`Сервер запущен на порту ${PORT}`);
-    setWebhook(); // Устанавливаем вебхук при запуске сервера
-});
-
-// Функции для работы с файлами
-async function getFilePath(fileId) {
-    const response = await fetch(`https://api.telegram.org/bot${process.env.TOKEN}/getFile?file_id=${fileId}`);
-    const data = await response.json();
-    return data.result.file_path;
-}
-
-async function checkImageAvailability(url) {
-    try {
-        const response = await fetch(url, { method: 'HEAD' });
-        return response.ok;
-    } catch (error) {
-        console.error(`Ошибка при проверке доступности изображения ${url}:`, error);
-        return false;
-    }
-}
