@@ -3,13 +3,23 @@ async function loadArts() {
     artContainer.innerHTML = '';
 
     try {
-        const response = await fetch('/getImages'); 
+        const response = await fetch('/getImages', {
+            method: 'GET',
+            headers: {
+                'Cache-Control': 'no-cache' // Отключаем кэширование
+            }
+        }); 
         const images = await response.json();
+
+        if (images.length === 0) {
+            console.log('No images found.'); // Логируем, если изображений нет
+            return; // Если изображений нет, ничего не добавляем
+        }
 
         images.forEach(image => {
             const artItem = document.createElement('div');
             artItem.className = 'art-item';
-            artItem.setAttribute('data-text', `Автор: ${image.author}`);
+            artItem.setAttribute('data-text', `Автор: ${image.author}`); // Исправлено
 
             const img = document.createElement('img');
             img.src = image.url;
