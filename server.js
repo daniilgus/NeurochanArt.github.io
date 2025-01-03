@@ -41,7 +41,11 @@ async function getImages() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log('Received data from Telegram:', data);
+
+    if (!data.result || data.result.length === 0) {
+      console.log('No new updates found.');
+      return [];
+    }
 
     const images = [];
     const existingIds = readMessageIds(); // Считываем существующие идентификаторы
@@ -49,44 +53,19 @@ async function getImages() {
 
     for (const update of data.result) {
       if (update.channel_post && update.channel_post.photo) {
-        const messageId = update.channel_post.message_id; // Получаем идентификатор сообщения
-        const photo = update.channel_post.photo[update.channel_post.photo.length - 1];
-        const fileId = photo.file_id;
-
-        const fileResponse = await fetch(`https://api.telegram.org/bot${TOKEN}/getFile?file_id=${fileId}`);
-        if (!fileResponse.ok) {
-          console.error(`HTTP error! status: ${fileResponse.status}`);
-          throw new Error(`HTTP error! status: ${fileResponse.status}`);
-        }
-        const fileData = await fileResponse.json();
-        const filePath = fileData.result.file_path;
-        const imageUrl = `https://api.telegram.org/file/bot${TOKEN}/${filePath}`;
-        const imagePath = `public/images/${filePath}`;
-
-        const text = update.channel_post.text || update.channel_post.caption || "";
-        const authorMatch = text.match(/Автор:(.*)/);
-        const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор";
-
-        // Добавляем идентификатор в новый набор
-        newIds.add(messageId);
-        // Если идентификатор новый, добавляем изображение в массив
-        if (!currentIds.has(messageId)) {
-          images.push({ url: imageUrl, text: text, author: authorText, imagePath });
-        }
+        // Ваш существующий код для обработки изображений
       }
     }
 
-    // Обновляем messages.json только с актуальными идентификаторами
-    const updatedIds = existingIds.filter(id => newIds.has(id)); // Сохраняем только актуальные идентификаторы
-    writeMessageIds(updatedIds); // Записываем обновленный список идентификаторов
-
-    console.log('Extracted images:', images);
+    // Обновляем список идентификаторов
+    writeMessageIds(Array.from(currentIds)); // Сохраняем обновленный список идентификаторов
     return images;
   } catch (error) {
     console.error('Ошибка при получении изображений:', error.message);
-    throw error;
+    throw error; // Пробрасываем ошибку дальше
   }
 }
+
 
 app.get('/getImages', async (req, res) => {
   try {
