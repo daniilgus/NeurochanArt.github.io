@@ -16,9 +16,7 @@ app.get('/', (req, res) => {
 });
 
 // Хранение изображений в памяти
-// Хранение изображений в памяти
 let currentImages = [];
-
 
 // Удаление существующего вебхука
 async function deleteWebhook() {
@@ -30,8 +28,6 @@ async function deleteWebhook() {
         console.log("Вебхук успешно удален!");
     }
 }
-
-
 
 // Получение информации о вебхуке
 async function getWebhookInfo() {
@@ -85,7 +81,7 @@ app.post('/webhook', express.json(), async (req, res) => {
             const authorText = authorMatch ? authorMatch[1].trim() : "Неизвестный автор"; // Получаем автора
 
             // Сохраняем изображение и информацию об авторе
-            currentImages.push({ url: imageUrl, text, author: authorText });
+            currentImages.push({ url: imageUrl, text, author: authorText, fileId: fileId });
         } else {
             console.log(`Изображение недоступно: ${imageUrl}`);
         }
@@ -98,6 +94,7 @@ app.post('/webhook', express.json(), async (req, res) => {
     res.sendStatus(200); // Отправляем статус 200
 });
 
+// Получение изображений
 app.get('/getImages', (req, res) => {
     console.log('Возвращаемые изображения:', currentImages);
     res.json(currentImages); // Возвращаем текущие изображения
@@ -125,4 +122,31 @@ async function checkImageAvailability(url) {
         return false;
     }
 }
+// Получение изображений
+app.get('/getImages', (req, res) => {
+    console.log('Возвращаемые изображения:', currentImages);
+    res.json(currentImages); // Возвращаем текущие изображения
+});
 
+// Запуск сервера
+app.listen(PORT, () => {
+    console.log(`Сервер запущен на порту ${PORT}`);
+    setWebhook(); // Устанавливаем вебхук при запуске сервера
+});
+
+// Функции для работы с файлами
+async function getFilePath(fileId) {
+    const response = await fetch(`https://api.telegram.org/bot${process.env.TOKEN}/getFile?file_id=${fileId}`);
+    const data = await response.json();
+    return data.result.file_path;
+}
+
+async function checkImageAvailability(url) {
+    try {
+        const response = await fetch(url, { method: 'HEAD' });
+        return response.ok;
+    } catch (error) {
+        console.error(`Ошибка при проверке доступности изображения ${url}:`, error);
+        return false;
+    }
+}
